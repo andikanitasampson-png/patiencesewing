@@ -66,7 +66,7 @@ function CartPage() {
             <div className="space-y-6">
               {items.map((item) => {
                 const product = productMap.get(item.productId);
-                const moq = product?.moq ?? item.moq;
+                const moq = item.kind === "wholesale" ? (product?.moq ?? item.moq) : 1;
                 const belowMoq = item.qty < moq;
                 const key = lineKey(item);
                 return (
