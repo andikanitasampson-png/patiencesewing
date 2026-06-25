@@ -79,17 +79,8 @@ export function SiteHeader() {
           </Link>
         </div>
 
-        <button
-          className="flex items-center gap-3 md:hidden"
-          onClick={() => setOpen((v) => !v)}
-          aria-label="Toggle menu"
-        >
-          <Link
-            to="/cart"
-            aria-label="Cart"
-            onClick={(e) => e.stopPropagation()}
-            className="relative"
-          >
+        <div className="flex items-center gap-4 md:hidden">
+          <Link to="/cart" aria-label="Cart" className="relative">
             <ShoppingBag className="h-5 w-5" />
             {count > 0 && (
               <span className="absolute -right-1.5 -top-1.5 min-w-[1rem] rounded-full bg-primary px-1 text-center text-[0.55rem] font-medium leading-[1rem] text-primary-foreground">
@@ -97,8 +88,10 @@ export function SiteHeader() {
               </span>
             )}
           </Link>
-          {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </button>
+          <button onClick={() => setOpen((v) => !v)} aria-label="Toggle menu">
+            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
+        </div>
       </div>
 
       {open && (
