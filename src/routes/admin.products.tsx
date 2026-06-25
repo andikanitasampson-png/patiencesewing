@@ -303,6 +303,33 @@ function EditModal({
           </div>
           <Input label="Colors (comma separated)" value={state.colors} onChange={(v) => setState({ ...state, colors: v })} />
           <Input label="Sizes (comma separated)" value={state.sizes} onChange={(v) => setState({ ...state, sizes: v })} />
+          <div>
+            <label className="text-xs uppercase tracking-widest text-muted-foreground">Retail price (NGN)</label>
+            <input
+              type="number"
+              min={0}
+              value={state.retail_price_ngn}
+              onChange={(e) => setState({ ...state, retail_price_ngn: Number(e.target.value) })}
+              className="mt-1 w-full rounded-sm border border-border bg-background px-3 py-2 text-sm focus:border-primary focus:outline-none"
+            />
+          </div>
+          <div>
+            <label className="text-xs uppercase tracking-widest text-muted-foreground">
+              Compare-at price (slash) — 0 for none
+            </label>
+            <input
+              type="number"
+              min={0}
+              value={state.compare_at_price_ngn}
+              onChange={(e) => setState({ ...state, compare_at_price_ngn: Number(e.target.value) })}
+              className="mt-1 w-full rounded-sm border border-border bg-background px-3 py-2 text-sm focus:border-primary focus:outline-none"
+            />
+            {state.compare_at_price_ngn > state.retail_price_ngn && state.retail_price_ngn > 0 && (
+              <p className="mt-1 text-[0.65rem] uppercase tracking-widest text-accent">
+                {Math.round(((state.compare_at_price_ngn - state.retail_price_ngn) / state.compare_at_price_ngn) * 100)}% off
+              </p>
+            )}
+          </div>
           <div className="sm:col-span-2">
             <label className="text-xs uppercase tracking-widest text-muted-foreground">Description</label>
             <textarea
