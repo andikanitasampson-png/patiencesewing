@@ -27,9 +27,10 @@ function CartPage() {
     productQueries.map((q, idx) => [uniqueIds[idx], q.data] as const),
   );
 
-  // Recompute unit prices live from tiers when qty changes
+  // Recompute wholesale unit prices live from tiers when qty changes; retail stays fixed.
   useEffect(() => {
     for (const item of items) {
+      if (item.kind !== "wholesale") continue;
       const product = productMap.get(item.productId);
       if (!product) continue;
       const tiers = product.pricing_tiers.map((t) => ({
@@ -42,7 +43,7 @@ function CartPage() {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [items.map((i) => `${i.productId}-${i.qty}`).join("|"), productQueries.every((q) => q.data)]);
+  }, [items.map((i) => `${i.productId}-${i.kind}-${i.qty}`).join("|"), productQueries.every((q) => q.data)]);
 
   return (
     <SiteLayout>
