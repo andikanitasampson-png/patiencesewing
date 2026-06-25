@@ -193,8 +193,23 @@ function ProductPage() {
             <div className="mt-8 flex flex-wrap gap-3">
               {isApprovedRetailer ? (
                 <button
-                  disabled={!color || !size || qty < product.moq}
-                  onClick={() => toast.success(`${qty} × ${product.name} added to cart`, { description: "Cart coming next — checkout is being wired up." })}
+                  disabled={!color || !size || qty < product.moq || !activeTier}
+                  onClick={() => {
+                    if (!color || !size || !activeTier) return;
+                    addItem({
+                      productId: product.id,
+                      name: product.name,
+                      image: product.images[0] ?? "",
+                      color,
+                      size,
+                      qty,
+                      unitPriceNgn: activeTier.unit_price_ngn,
+                      moq: product.moq,
+                    });
+                    toast.success(`${qty} × ${product.name} added to cart`, {
+                      action: { label: "View cart", onClick: () => navigate({ to: "/cart" }) },
+                    });
+                  }}
                   className="rounded-sm bg-primary px-7 py-4 text-xs font-medium uppercase tracking-[0.22em] text-primary-foreground transition-colors hover:bg-accent hover:text-accent-foreground disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   Add to Cart

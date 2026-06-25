@@ -1,7 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, ShoppingBag } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
+import { useCart } from "@/lib/cart-context";
 
 const navItems = [
   { to: "/", label: "Home" },
@@ -12,6 +13,7 @@ const navItems = [
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const { user, profile, signOut, isApprovedRetailer } = useAuth();
+  const { count } = useCart();
 
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur">
@@ -63,13 +65,38 @@ export function SiteHeader() {
               Sign in
             </Link>
           )}
+          <Link
+            to="/cart"
+            aria-label="Cart"
+            className="relative flex h-9 w-9 items-center justify-center text-foreground/80 hover:text-primary"
+          >
+            <ShoppingBag className="h-5 w-5" />
+            {count > 0 && (
+              <span className="absolute -right-1 -top-1 min-w-[1.1rem] rounded-full bg-primary px-1 text-center text-[0.6rem] font-medium leading-[1.1rem] text-primary-foreground">
+                {count}
+              </span>
+            )}
+          </Link>
         </div>
 
         <button
-          className="md:hidden"
+          className="flex items-center gap-3 md:hidden"
           onClick={() => setOpen((v) => !v)}
           aria-label="Toggle menu"
         >
+          <Link
+            to="/cart"
+            aria-label="Cart"
+            onClick={(e) => e.stopPropagation()}
+            className="relative"
+          >
+            <ShoppingBag className="h-5 w-5" />
+            {count > 0 && (
+              <span className="absolute -right-1.5 -top-1.5 min-w-[1rem] rounded-full bg-primary px-1 text-center text-[0.55rem] font-medium leading-[1rem] text-primary-foreground">
+                {count}
+              </span>
+            )}
+          </Link>
           {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
       </div>
