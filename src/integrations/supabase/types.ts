@@ -154,6 +154,7 @@ export type Database = {
           moq: number
           name: string
           sizes: string[]
+          videos: string[]
         }
         Insert: {
           category: string
@@ -167,6 +168,7 @@ export type Database = {
           moq?: number
           name: string
           sizes?: string[]
+          videos?: string[]
         }
         Update: {
           category?: string
@@ -180,6 +182,7 @@ export type Database = {
           moq?: number
           name?: string
           sizes?: string[]
+          videos?: string[]
         }
         Relationships: []
       }
@@ -287,6 +290,10 @@ export type Database = {
       is_approved_retailer: { Args: { _uid: string }; Returns: boolean }
       review_retailer_application: {
         Args: { _application_id: string; _decision: string; _notes?: string }
+        Returns: undefined
+      }
+      set_user_role: {
+        Args: { _role: string; _user_id: string }
         Returns: undefined
       }
     }
