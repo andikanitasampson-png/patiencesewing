@@ -76,7 +76,7 @@ function HomePage() {
           </div>
 
           <div className="order-1 lg:order-2 lg:col-span-7">
-            <div className="relative h-[60vh] min-h-[420px] overflow-hidden bg-secondary lg:h-[88vh]">
+            <div className="relative h-[calc(60vh-4rem)] min-h-[420px] overflow-hidden bg-secondary lg:h-[calc(100vh-5rem)]">
               <img
                 src={heroImg}
                 alt="Editorial shot of an Ankara wrap dress in burnt orange"
