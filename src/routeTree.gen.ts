@@ -21,6 +21,7 @@ import { Route as CatalogIndexRouteImport } from './routes/catalog.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as OrdersIdRouteImport } from './routes/orders.$id'
 import { Route as CatalogIdRouteImport } from './routes/catalog.$id'
+import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AdminProductsRouteImport } from './routes/admin.products'
 import { Route as AdminOrdersRouteImport } from './routes/admin.orders'
 import { Route as AdminApplicationsRouteImport } from './routes/admin.applications'
@@ -85,6 +86,11 @@ const CatalogIdRoute = CatalogIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => CatalogRoute,
 } as any)
+const AdminUsersRoute = AdminUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminProductsRoute = AdminProductsRouteImport.update({
   id: '/products',
   path: '/products',
@@ -113,6 +119,7 @@ export interface FileRoutesByFullPath {
   '/admin/applications': typeof AdminApplicationsRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/products': typeof AdminProductsRoute
+  '/admin/users': typeof AdminUsersRoute
   '/catalog/$id': typeof CatalogIdRoute
   '/orders/$id': typeof OrdersIdRoute
   '/admin/': typeof AdminIndexRoute
@@ -128,6 +135,7 @@ export interface FileRoutesByTo {
   '/admin/applications': typeof AdminApplicationsRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/products': typeof AdminProductsRoute
+  '/admin/users': typeof AdminUsersRoute
   '/catalog/$id': typeof CatalogIdRoute
   '/orders/$id': typeof OrdersIdRoute
   '/admin': typeof AdminIndexRoute
@@ -146,6 +154,7 @@ export interface FileRoutesById {
   '/admin/applications': typeof AdminApplicationsRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/products': typeof AdminProductsRoute
+  '/admin/users': typeof AdminUsersRoute
   '/catalog/$id': typeof CatalogIdRoute
   '/orders/$id': typeof OrdersIdRoute
   '/admin/': typeof AdminIndexRoute
@@ -165,6 +174,7 @@ export interface FileRouteTypes {
     | '/admin/applications'
     | '/admin/orders'
     | '/admin/products'
+    | '/admin/users'
     | '/catalog/$id'
     | '/orders/$id'
     | '/admin/'
@@ -180,6 +190,7 @@ export interface FileRouteTypes {
     | '/admin/applications'
     | '/admin/orders'
     | '/admin/products'
+    | '/admin/users'
     | '/catalog/$id'
     | '/orders/$id'
     | '/admin'
@@ -197,6 +208,7 @@ export interface FileRouteTypes {
     | '/admin/applications'
     | '/admin/orders'
     | '/admin/products'
+    | '/admin/users'
     | '/catalog/$id'
     | '/orders/$id'
     | '/admin/'
@@ -301,6 +313,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CatalogIdRouteImport
       parentRoute: typeof CatalogRoute
     }
+    '/admin/users': {
+      id: '/admin/users'
+      path: '/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AdminUsersRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/products': {
       id: '/admin/products'
       path: '/products'
@@ -329,6 +348,7 @@ interface AdminRouteChildren {
   AdminApplicationsRoute: typeof AdminApplicationsRoute
   AdminOrdersRoute: typeof AdminOrdersRoute
   AdminProductsRoute: typeof AdminProductsRoute
+  AdminUsersRoute: typeof AdminUsersRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
@@ -336,6 +356,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminApplicationsRoute: AdminApplicationsRoute,
   AdminOrdersRoute: AdminOrdersRoute,
   AdminProductsRoute: AdminProductsRoute,
+  AdminUsersRoute: AdminUsersRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
 
