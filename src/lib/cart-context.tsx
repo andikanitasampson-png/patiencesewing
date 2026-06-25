@@ -9,6 +9,7 @@ export type CartItem = {
   qty: number;
   unitPriceNgn: number; // snapshot at time of add; cart page recomputes via tiers
   moq: number;
+  kind: "retail" | "wholesale";
 };
 
 type CartState = {
