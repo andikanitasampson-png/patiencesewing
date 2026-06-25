@@ -20,6 +20,8 @@ export type Product = {
   sizes: string[];
   moq: number;
   is_active: boolean;
+  retail_price_ngn: number;
+  compare_at_price_ngn: number | null;
   created_at: string;
 };
 
