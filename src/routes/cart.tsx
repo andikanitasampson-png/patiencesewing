@@ -92,7 +92,7 @@ function CartPage() {
                             {item.name}
                           </Link>
                           <p className="mt-1 text-xs uppercase tracking-widest text-muted-foreground">
-                            {item.color} · Size {item.size}
+                            {item.color} · Size {item.size} · {item.kind}
                           </p>
                         </div>
                         <button
