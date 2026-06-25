@@ -15,10 +15,15 @@ import { Route as CatalogRouteImport } from './routes/catalog'
 import { Route as CartRouteImport } from './routes/cart'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ApplyRouteImport } from './routes/apply'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CatalogIndexRouteImport } from './routes/catalog.index'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as OrdersIdRouteImport } from './routes/orders.$id'
 import { Route as CatalogIdRouteImport } from './routes/catalog.$id'
+import { Route as AdminProductsRouteImport } from './routes/admin.products'
+import { Route as AdminOrdersRouteImport } from './routes/admin.orders'
+import { Route as AdminApplicationsRouteImport } from './routes/admin.applications'
 
 const DashboardRoute = DashboardRouteImport.update({
   id: '/dashboard',
@@ -50,6 +55,11 @@ const ApplyRoute = ApplyRouteImport.update({
   path: '/apply',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -59,6 +69,11 @@ const CatalogIndexRoute = CatalogIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => CatalogRoute,
+} as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
 } as any)
 const OrdersIdRoute = OrdersIdRouteImport.update({
   id: '/orders/$id',
@@ -70,17 +85,37 @@ const CatalogIdRoute = CatalogIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => CatalogRoute,
 } as any)
+const AdminProductsRoute = AdminProductsRouteImport.update({
+  id: '/products',
+  path: '/products',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminOrdersRoute = AdminOrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminApplicationsRoute = AdminApplicationsRouteImport.update({
+  id: '/applications',
+  path: '/applications',
+  getParentRoute: () => AdminRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
   '/apply': typeof ApplyRoute
   '/auth': typeof AuthRoute
   '/cart': typeof CartRoute
   '/catalog': typeof CatalogRouteWithChildren
   '/checkout': typeof CheckoutRoute
   '/dashboard': typeof DashboardRoute
+  '/admin/applications': typeof AdminApplicationsRoute
+  '/admin/orders': typeof AdminOrdersRoute
+  '/admin/products': typeof AdminProductsRoute
   '/catalog/$id': typeof CatalogIdRoute
   '/orders/$id': typeof OrdersIdRoute
+  '/admin/': typeof AdminIndexRoute
   '/catalog/': typeof CatalogIndexRoute
 }
 export interface FileRoutesByTo {
@@ -90,35 +125,49 @@ export interface FileRoutesByTo {
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/dashboard': typeof DashboardRoute
+  '/admin/applications': typeof AdminApplicationsRoute
+  '/admin/orders': typeof AdminOrdersRoute
+  '/admin/products': typeof AdminProductsRoute
   '/catalog/$id': typeof CatalogIdRoute
   '/orders/$id': typeof OrdersIdRoute
+  '/admin': typeof AdminIndexRoute
   '/catalog': typeof CatalogIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
   '/apply': typeof ApplyRoute
   '/auth': typeof AuthRoute
   '/cart': typeof CartRoute
   '/catalog': typeof CatalogRouteWithChildren
   '/checkout': typeof CheckoutRoute
   '/dashboard': typeof DashboardRoute
+  '/admin/applications': typeof AdminApplicationsRoute
+  '/admin/orders': typeof AdminOrdersRoute
+  '/admin/products': typeof AdminProductsRoute
   '/catalog/$id': typeof CatalogIdRoute
   '/orders/$id': typeof OrdersIdRoute
+  '/admin/': typeof AdminIndexRoute
   '/catalog/': typeof CatalogIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin'
     | '/apply'
     | '/auth'
     | '/cart'
     | '/catalog'
     | '/checkout'
     | '/dashboard'
+    | '/admin/applications'
+    | '/admin/orders'
+    | '/admin/products'
     | '/catalog/$id'
     | '/orders/$id'
+    | '/admin/'
     | '/catalog/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -128,25 +177,35 @@ export interface FileRouteTypes {
     | '/cart'
     | '/checkout'
     | '/dashboard'
+    | '/admin/applications'
+    | '/admin/orders'
+    | '/admin/products'
     | '/catalog/$id'
     | '/orders/$id'
+    | '/admin'
     | '/catalog'
   id:
     | '__root__'
     | '/'
+    | '/admin'
     | '/apply'
     | '/auth'
     | '/cart'
     | '/catalog'
     | '/checkout'
     | '/dashboard'
+    | '/admin/applications'
+    | '/admin/orders'
+    | '/admin/products'
     | '/catalog/$id'
     | '/orders/$id'
+    | '/admin/'
     | '/catalog/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRouteWithChildren
   ApplyRoute: typeof ApplyRoute
   AuthRoute: typeof AuthRoute
   CartRoute: typeof CartRoute
@@ -200,6 +259,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApplyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -213,6 +279,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/catalog/'
       preLoaderRoute: typeof CatalogIndexRouteImport
       parentRoute: typeof CatalogRoute
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/orders/$id': {
       id: '/orders/$id'
@@ -228,8 +301,45 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CatalogIdRouteImport
       parentRoute: typeof CatalogRoute
     }
+    '/admin/products': {
+      id: '/admin/products'
+      path: '/products'
+      fullPath: '/admin/products'
+      preLoaderRoute: typeof AdminProductsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/orders': {
+      id: '/admin/orders'
+      path: '/orders'
+      fullPath: '/admin/orders'
+      preLoaderRoute: typeof AdminOrdersRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/applications': {
+      id: '/admin/applications'
+      path: '/applications'
+      fullPath: '/admin/applications'
+      preLoaderRoute: typeof AdminApplicationsRouteImport
+      parentRoute: typeof AdminRoute
+    }
   }
 }
+
+interface AdminRouteChildren {
+  AdminApplicationsRoute: typeof AdminApplicationsRoute
+  AdminOrdersRoute: typeof AdminOrdersRoute
+  AdminProductsRoute: typeof AdminProductsRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminApplicationsRoute: AdminApplicationsRoute,
+  AdminOrdersRoute: AdminOrdersRoute,
+  AdminProductsRoute: AdminProductsRoute,
+  AdminIndexRoute: AdminIndexRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 interface CatalogRouteChildren {
   CatalogIdRoute: typeof CatalogIdRoute
@@ -246,6 +356,7 @@ const CatalogRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRouteWithChildren,
   ApplyRoute: ApplyRoute,
   AuthRoute: AuthRoute,
   CartRoute: CartRoute,

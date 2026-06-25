@@ -43,7 +43,7 @@ function AdminApplications() {
       const { error } = await supabase.rpc("review_retailer_application", {
         _application_id: id,
         _decision: decision,
-        _notes: notes ?? null,
+        _notes: notes,
       });
       if (error) throw error;
     },

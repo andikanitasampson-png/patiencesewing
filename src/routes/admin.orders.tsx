@@ -89,7 +89,7 @@ function AdminOrders() {
               <Th>Total</Th>
               <Th>Date</Th>
               <Th>Status</Th>
-              <Th></Th>
+              <Th>{""}</Th>
             </tr>
           </thead>
           <tbody>

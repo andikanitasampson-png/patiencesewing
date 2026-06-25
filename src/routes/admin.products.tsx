@@ -68,7 +68,7 @@ function AdminProducts() {
               <Th>Starting price</Th>
               <Th>Tiers</Th>
               <Th>Active</Th>
-              <Th></Th>
+              <Th>{""}</Th>
             </tr>
           </thead>
           <tbody>
