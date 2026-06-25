@@ -15,6 +15,7 @@ export type Product = {
   category: string;
   fabric: string | null;
   images: string[];
+  videos: string[];
   colors: string[];
   sizes: string[];
   moq: number;
