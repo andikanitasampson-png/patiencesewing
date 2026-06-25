@@ -9,16 +9,29 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CatalogRouteImport } from './routes/catalog'
+import { Route as CartRouteImport } from './routes/cart'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ApplyRouteImport } from './routes/apply'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CatalogIndexRouteImport } from './routes/catalog.index'
+import { Route as OrdersIdRouteImport } from './routes/orders.$id'
 import { Route as CatalogIdRouteImport } from './routes/catalog.$id'
 
+const CheckoutRoute = CheckoutRouteImport.update({
+  id: '/checkout',
+  path: '/checkout',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CatalogRoute = CatalogRouteImport.update({
   id: '/catalog',
   path: '/catalog',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CartRoute = CartRouteImport.update({
+  id: '/cart',
+  path: '/cart',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -41,6 +54,11 @@ const CatalogIndexRoute = CatalogIndexRouteImport.update({
   path: '/',
   getParentRoute: () => CatalogRoute,
 } as any)
+const OrdersIdRoute = OrdersIdRouteImport.update({
+  id: '/orders/$id',
+  path: '/orders/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CatalogIdRoute = CatalogIdRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -51,15 +69,21 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/apply': typeof ApplyRoute
   '/auth': typeof AuthRoute
+  '/cart': typeof CartRoute
   '/catalog': typeof CatalogRouteWithChildren
+  '/checkout': typeof CheckoutRoute
   '/catalog/$id': typeof CatalogIdRoute
+  '/orders/$id': typeof OrdersIdRoute
   '/catalog/': typeof CatalogIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/apply': typeof ApplyRoute
   '/auth': typeof AuthRoute
+  '/cart': typeof CartRoute
+  '/checkout': typeof CheckoutRoute
   '/catalog/$id': typeof CatalogIdRoute
+  '/orders/$id': typeof OrdersIdRoute
   '/catalog': typeof CatalogIndexRoute
 }
 export interface FileRoutesById {
@@ -67,8 +91,11 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/apply': typeof ApplyRoute
   '/auth': typeof AuthRoute
+  '/cart': typeof CartRoute
   '/catalog': typeof CatalogRouteWithChildren
+  '/checkout': typeof CheckoutRoute
   '/catalog/$id': typeof CatalogIdRoute
+  '/orders/$id': typeof OrdersIdRoute
   '/catalog/': typeof CatalogIndexRoute
 }
 export interface FileRouteTypes {
@@ -77,18 +104,32 @@ export interface FileRouteTypes {
     | '/'
     | '/apply'
     | '/auth'
+    | '/cart'
     | '/catalog'
+    | '/checkout'
     | '/catalog/$id'
+    | '/orders/$id'
     | '/catalog/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/apply' | '/auth' | '/catalog/$id' | '/catalog'
+  to:
+    | '/'
+    | '/apply'
+    | '/auth'
+    | '/cart'
+    | '/checkout'
+    | '/catalog/$id'
+    | '/orders/$id'
+    | '/catalog'
   id:
     | '__root__'
     | '/'
     | '/apply'
     | '/auth'
+    | '/cart'
     | '/catalog'
+    | '/checkout'
     | '/catalog/$id'
+    | '/orders/$id'
     | '/catalog/'
   fileRoutesById: FileRoutesById
 }
@@ -96,16 +137,33 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ApplyRoute: typeof ApplyRoute
   AuthRoute: typeof AuthRoute
+  CartRoute: typeof CartRoute
   CatalogRoute: typeof CatalogRouteWithChildren
+  CheckoutRoute: typeof CheckoutRoute
+  OrdersIdRoute: typeof OrdersIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/checkout': {
+      id: '/checkout'
+      path: '/checkout'
+      fullPath: '/checkout'
+      preLoaderRoute: typeof CheckoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/catalog': {
       id: '/catalog'
       path: '/catalog'
       fullPath: '/catalog'
       preLoaderRoute: typeof CatalogRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cart': {
+      id: '/cart'
+      path: '/cart'
+      fullPath: '/cart'
+      preLoaderRoute: typeof CartRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -136,6 +194,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CatalogIndexRouteImport
       parentRoute: typeof CatalogRoute
     }
+    '/orders/$id': {
+      id: '/orders/$id'
+      path: '/orders/$id'
+      fullPath: '/orders/$id'
+      preLoaderRoute: typeof OrdersIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/catalog/$id': {
       id: '/catalog/$id'
       path: '/$id'
@@ -163,7 +228,10 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ApplyRoute: ApplyRoute,
   AuthRoute: AuthRoute,
+  CartRoute: CartRoute,
   CatalogRoute: CatalogRouteWithChildren,
+  CheckoutRoute: CheckoutRoute,
+  OrdersIdRoute: OrdersIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

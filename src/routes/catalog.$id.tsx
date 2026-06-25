@@ -1,4 +1,4 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { Lock } from "lucide-react";
@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { SiteLayout } from "@/components/site-layout";
 import { fetchProduct, formatNgn, resolveImage, tierForQty } from "@/lib/products";
 import { useAuth } from "@/lib/auth-context";
+import { useCart } from "@/lib/cart-context";
 
 export const Route = createFileRoute("/catalog/$id")({
   component: ProductPage,
@@ -14,6 +15,8 @@ export const Route = createFileRoute("/catalog/$id")({
 function ProductPage() {
   const { id } = Route.useParams();
   const { isApprovedRetailer, user } = useAuth();
+  const { addItem } = useCart();
+  const navigate = useNavigate();
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["product", id],
@@ -190,8 +193,23 @@ function ProductPage() {
             <div className="mt-8 flex flex-wrap gap-3">
               {isApprovedRetailer ? (
                 <button
-                  disabled={!color || !size || qty < product.moq}
-                  onClick={() => toast.success(`${qty} × ${product.name} added to cart`, { description: "Cart coming next — checkout is being wired up." })}
+                  disabled={!color || !size || qty < product.moq || !activeTier}
+                  onClick={() => {
+                    if (!color || !size || !activeTier) return;
+                    addItem({
+                      productId: product.id,
+                      name: product.name,
+                      image: product.images[0] ?? "",
+                      color,
+                      size,
+                      qty,
+                      unitPriceNgn: activeTier.unit_price_ngn,
+                      moq: product.moq,
+                    });
+                    toast.success(`${qty} × ${product.name} added to cart`, {
+                      action: { label: "View cart", onClick: () => navigate({ to: "/cart" }) },
+                    });
+                  }}
                   className="rounded-sm bg-primary px-7 py-4 text-xs font-medium uppercase tracking-[0.22em] text-primary-foreground transition-colors hover:bg-accent hover:text-accent-foreground disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   Add to Cart
