@@ -68,33 +68,45 @@ export type Database = {
       orders: {
         Row: {
           created_at: string
+          customer_type: string
+          guest_email: string | null
+          guest_name: string | null
+          guest_phone: string | null
           id: string
           notes: string | null
           paystack_reference: string | null
           paystack_status: string | null
-          retailer_id: string
+          retailer_id: string | null
           shipping_address: string | null
           status: string
           total_ngn: number
         }
         Insert: {
           created_at?: string
+          customer_type?: string
+          guest_email?: string | null
+          guest_name?: string | null
+          guest_phone?: string | null
           id?: string
           notes?: string | null
           paystack_reference?: string | null
           paystack_status?: string | null
-          retailer_id: string
+          retailer_id?: string | null
           shipping_address?: string | null
           status?: string
           total_ngn: number
         }
         Update: {
           created_at?: string
+          customer_type?: string
+          guest_email?: string | null
+          guest_name?: string | null
+          guest_phone?: string | null
           id?: string
           notes?: string | null
           paystack_reference?: string | null
           paystack_status?: string | null
-          retailer_id?: string
+          retailer_id?: string | null
           shipping_address?: string | null
           status?: string
           total_ngn?: number
@@ -145,6 +157,7 @@ export type Database = {
         Row: {
           category: string
           colors: string[]
+          compare_at_price_ngn: number | null
           created_at: string
           description: string | null
           fabric: string | null
@@ -153,12 +166,14 @@ export type Database = {
           is_active: boolean
           moq: number
           name: string
+          retail_price_ngn: number
           sizes: string[]
           videos: string[]
         }
         Insert: {
           category: string
           colors?: string[]
+          compare_at_price_ngn?: number | null
           created_at?: string
           description?: string | null
           fabric?: string | null
@@ -167,12 +182,14 @@ export type Database = {
           is_active?: boolean
           moq?: number
           name: string
+          retail_price_ngn?: number
           sizes?: string[]
           videos?: string[]
         }
         Update: {
           category?: string
           colors?: string[]
+          compare_at_price_ngn?: number | null
           created_at?: string
           description?: string | null
           fabric?: string | null
@@ -181,6 +198,7 @@ export type Database = {
           is_active?: boolean
           moq?: number
           name?: string
+          retail_price_ngn?: number
           sizes?: string[]
           videos?: string[]
         }
