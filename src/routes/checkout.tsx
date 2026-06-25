@@ -13,12 +13,15 @@ export const Route = createFileRoute("/checkout")({
 
 function CheckoutPage() {
   const { items, subtotal, clear } = useCart();
-  const { user, profile, isApprovedRetailer, loading } = useAuth();
+  const { user, profile, loading } = useAuth();
   const navigate = useNavigate();
+
+  const isGuest = !user;
 
   const [name, setName] = useState("");
   const [business, setBusiness] = useState("");
   const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
   const [address, setAddress] = useState("");
   const [notes, setNotes] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -30,38 +33,52 @@ function CheckoutPage() {
       setPhone(profile.phone || "");
       setAddress(profile.business_address || "");
     }
-  }, [profile]);
+    if (user?.email) setEmail(user.email);
+  }, [profile, user]);
 
   useEffect(() => {
     if (loading) return;
-    if (!user) navigate({ to: "/auth" });
-    else if (!isApprovedRetailer) navigate({ to: "/apply" });
-    else if (items.length === 0) navigate({ to: "/cart" });
-  }, [loading, user, isApprovedRetailer, items.length, navigate]);
+    if (items.length === 0) navigate({ to: "/cart" });
+  }, [loading, items.length, navigate]);
 
   const handlePay = async () => {
-    if (!user) return;
-    if (!name || !phone || !address) {
+    if (!name || !phone || !address || !email) {
       toast.error("Please complete contact and shipping information.");
       return;
     }
     setSubmitting(true);
     try {
-      // Stubbed Paystack: simulate a successful reference
       const ref = `PS_STUB_${Date.now()}_${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
-      const shipping = `${name}${business ? ` · ${business}` : ""}\n${phone}\n${address}`;
+      const shipping = `${name}${business ? ` · ${business}` : ""}\n${phone}\n${email}\n${address}`;
+
+      const orderPayload = user
+        ? {
+            retailer_id: user.id,
+            customer_type: "retailer",
+            total_ngn: subtotal,
+            status: "paid",
+            shipping_address: shipping,
+            notes: notes || null,
+            paystack_reference: ref,
+            paystack_status: "success",
+          }
+        : {
+            retailer_id: null,
+            customer_type: "guest",
+            guest_name: name,
+            guest_email: email,
+            guest_phone: phone,
+            total_ngn: subtotal,
+            status: "paid",
+            shipping_address: shipping,
+            notes: notes || null,
+            paystack_reference: ref,
+            paystack_status: "success",
+          };
 
       const { data: order, error: orderErr } = await supabase
         .from("orders")
-        .insert({
-          retailer_id: user.id,
-          total_ngn: subtotal,
-          status: "paid",
-          shipping_address: shipping,
-          notes: notes || null,
-          paystack_reference: ref,
-          paystack_status: "success",
-        })
+        .insert(orderPayload)
         .select("id")
         .single();
 
@@ -82,7 +99,14 @@ function CheckoutPage() {
 
       clear();
       toast.success("Payment confirmed");
-      navigate({ to: "/orders/$id", params: { id: order.id } });
+      if (user) {
+        navigate({ to: "/orders/$id", params: { id: order.id } });
+      } else {
+        toast.success("Order placed", {
+          description: `Reference ${ref}. We'll email ${email} with shipping updates.`,
+        });
+        navigate({ to: "/" });
+      }
     } catch (e) {
       console.error(e);
       toast.error("We couldn't complete your order.", {
@@ -100,9 +124,14 @@ function CheckoutPage() {
           ← Back to cart
         </Link>
         <h1 className="mt-4 text-5xl lg:text-6xl">Checkout</h1>
+        {isGuest && (
+          <p className="mt-3 max-w-xl text-sm text-muted-foreground">
+            Checking out as guest. <Link to="/auth" className="underline hover:text-primary">Sign in</Link> or{" "}
+            <Link to="/apply" className="underline hover:text-primary">apply as a retailer</Link> to unlock wholesale pricing.
+          </p>
+        )}
 
         <div className="mt-12 grid gap-12 lg:grid-cols-[1fr_420px]">
-          {/* Form */}
           <div className="space-y-10">
             <section>
               <p className="eyebrow mb-5">Contact & Shipping</p>
@@ -110,24 +139,13 @@ function CheckoutPage() {
                 <Field label="Full Name" value={name} onChange={setName} required />
                 <Field label="Business Name" value={business} onChange={setBusiness} />
                 <Field label="Phone" value={phone} onChange={setPhone} required />
-                <Field label="Email" value={user?.email ?? ""} onChange={() => {}} disabled />
+                <Field label="Email" value={email} onChange={setEmail} required disabled={!!user?.email} />
               </div>
               <div className="mt-4">
-                <Field
-                  label="Shipping Address"
-                  value={address}
-                  onChange={setAddress}
-                  required
-                  textarea
-                />
+                <Field label="Shipping Address" value={address} onChange={setAddress} required textarea />
               </div>
               <div className="mt-4">
-                <Field
-                  label="Order Notes (optional)"
-                  value={notes}
-                  onChange={setNotes}
-                  textarea
-                />
+                <Field label="Order Notes (optional)" value={notes} onChange={setNotes} textarea />
               </div>
             </section>
 
@@ -145,20 +163,15 @@ function CheckoutPage() {
                     Sandbox
                   </span>
                 </div>
-                <p className="mt-4 text-xs leading-relaxed text-muted-foreground">
-                  Live keys are not yet configured. Confirming the order below will record a
-                  successful sandbox reference so you can review the end-to-end flow.
-                </p>
               </div>
             </section>
           </div>
 
-          {/* Summary */}
           <aside className="self-start border border-border bg-background p-7">
             <p className="eyebrow">Order Summary</p>
             <ul className="mt-5 space-y-4 border-b border-border pb-5">
               {items.map((i) => (
-                <li key={`${i.productId}-${i.color}-${i.size}`} className="flex gap-3">
+                <li key={`${i.productId}-${i.kind}-${i.color}-${i.size}`} className="flex gap-3">
                   <img
                     src={resolveImage(i.image)}
                     alt={i.name}
@@ -167,7 +180,7 @@ function CheckoutPage() {
                   <div className="flex-1 text-sm">
                     <p className="font-medium">{i.name}</p>
                     <p className="text-xs text-muted-foreground">
-                      {i.color} · {i.size} · {i.qty} pcs
+                      {i.color} · {i.size} · {i.qty} pcs · {i.kind}
                     </p>
                   </div>
                   <p className="text-sm font-medium text-primary">
@@ -187,9 +200,6 @@ function CheckoutPage() {
             >
               {submitting ? "Processing…" : `Pay ${formatNgn(subtotal)}`}
             </button>
-            <p className="mt-3 text-center text-[0.65rem] uppercase tracking-widest text-muted-foreground">
-              By confirming, you accept the wholesale terms.
-            </p>
           </aside>
         </div>
       </div>
@@ -221,21 +231,9 @@ function Field({
         {required && " *"}
       </span>
       {textarea ? (
-        <textarea
-          rows={3}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          disabled={disabled}
-          className={cls}
-        />
+        <textarea rows={3} value={value} onChange={(e) => onChange(e.target.value)} disabled={disabled} className={cls} />
       ) : (
-        <input
-          type="text"
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          disabled={disabled}
-          className={cls}
-        />
+        <input type="text" value={value} onChange={(e) => onChange(e.target.value)} disabled={disabled} className={cls} />
       )}
     </label>
   );
