@@ -14,13 +14,277 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      order_items: {
+        Row: {
+          color: string | null
+          id: string
+          order_id: string
+          product_id: string | null
+          product_name: string
+          quantity: number
+          size: string | null
+          subtotal_ngn: number
+          unit_price_ngn: number
+        }
+        Insert: {
+          color?: string | null
+          id?: string
+          order_id: string
+          product_id?: string | null
+          product_name: string
+          quantity: number
+          size?: string | null
+          subtotal_ngn: number
+          unit_price_ngn: number
+        }
+        Update: {
+          color?: string | null
+          id?: string
+          order_id?: string
+          product_id?: string | null
+          product_name?: string
+          quantity?: number
+          size?: string | null
+          subtotal_ngn?: number
+          unit_price_ngn?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_items_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      orders: {
+        Row: {
+          created_at: string
+          id: string
+          notes: string | null
+          paystack_reference: string | null
+          paystack_status: string | null
+          retailer_id: string
+          shipping_address: string | null
+          status: string
+          total_ngn: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          notes?: string | null
+          paystack_reference?: string | null
+          paystack_status?: string | null
+          retailer_id: string
+          shipping_address?: string | null
+          status?: string
+          total_ngn: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          notes?: string | null
+          paystack_reference?: string | null
+          paystack_status?: string | null
+          retailer_id?: string
+          shipping_address?: string | null
+          status?: string
+          total_ngn?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orders_retailer_id_fkey"
+            columns: ["retailer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pricing_tiers: {
+        Row: {
+          id: string
+          max_qty: number | null
+          min_qty: number
+          product_id: string
+          unit_price_ngn: number
+        }
+        Insert: {
+          id?: string
+          max_qty?: number | null
+          min_qty: number
+          product_id: string
+          unit_price_ngn: number
+        }
+        Update: {
+          id?: string
+          max_qty?: number | null
+          min_qty?: number
+          product_id?: string
+          unit_price_ngn?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pricing_tiers_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      products: {
+        Row: {
+          category: string
+          colors: string[]
+          created_at: string
+          description: string | null
+          fabric: string | null
+          id: string
+          images: string[]
+          is_active: boolean
+          moq: number
+          name: string
+          sizes: string[]
+        }
+        Insert: {
+          category: string
+          colors?: string[]
+          created_at?: string
+          description?: string | null
+          fabric?: string | null
+          id?: string
+          images?: string[]
+          is_active?: boolean
+          moq?: number
+          name: string
+          sizes?: string[]
+        }
+        Update: {
+          category?: string
+          colors?: string[]
+          created_at?: string
+          description?: string | null
+          fabric?: string | null
+          id?: string
+          images?: string[]
+          is_active?: boolean
+          moq?: number
+          name?: string
+          sizes?: string[]
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          business_address: string | null
+          business_name: string | null
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          monthly_volume: string | null
+          phone: string | null
+          retailer_status: string | null
+          role: string
+          social_links: Json | null
+        }
+        Insert: {
+          business_address?: string | null
+          business_name?: string | null
+          created_at?: string
+          email: string
+          full_name?: string
+          id: string
+          monthly_volume?: string | null
+          phone?: string | null
+          retailer_status?: string | null
+          role?: string
+          social_links?: Json | null
+        }
+        Update: {
+          business_address?: string | null
+          business_name?: string | null
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          monthly_volume?: string | null
+          phone?: string | null
+          retailer_status?: string | null
+          role?: string
+          social_links?: Json | null
+        }
+        Relationships: []
+      }
+      retailer_applications: {
+        Row: {
+          admin_notes: string | null
+          business_address: string
+          business_name: string
+          email: string
+          id: string
+          monthly_volume: string | null
+          owner_name: string
+          phone: string
+          social_links: Json | null
+          status: string
+          submitted_at: string
+          user_id: string | null
+        }
+        Insert: {
+          admin_notes?: string | null
+          business_address: string
+          business_name: string
+          email: string
+          id?: string
+          monthly_volume?: string | null
+          owner_name: string
+          phone: string
+          social_links?: Json | null
+          status?: string
+          submitted_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          admin_notes?: string | null
+          business_address?: string
+          business_name?: string
+          email?: string
+          id?: string
+          monthly_volume?: string | null
+          owner_name?: string
+          phone?: string
+          social_links?: Json | null
+          status?: string
+          submitted_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "retailer_applications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_admin: { Args: { _uid: string }; Returns: boolean }
+      is_approved_retailer: { Args: { _uid: string }; Returns: boolean }
     }
     Enums: {
       [_ in never]: never
