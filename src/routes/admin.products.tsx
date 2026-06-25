@@ -189,6 +189,8 @@ function AdminProducts() {
                               sizes: p.sizes.join(", "),
                               images: p.images ?? [],
                               videos: p.videos ?? [],
+                              retail_price_ngn: Number(p.retail_price_ngn ?? 0),
+                              compare_at_price_ngn: Number(p.compare_at_price_ngn ?? 0),
                             })
                           }
                           className="inline-flex items-center gap-1.5 text-xs uppercase tracking-[0.18em] text-primary hover:text-accent"
