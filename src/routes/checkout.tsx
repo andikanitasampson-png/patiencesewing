@@ -51,30 +51,19 @@ function CheckoutPage() {
       const ref = `PS_STUB_${Date.now()}_${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
       const shipping = `${name}${business ? ` · ${business}` : ""}\n${phone}\n${email}\n${address}`;
 
-      const orderPayload = user
-        ? {
-            retailer_id: user.id,
-            customer_type: "retailer",
-            total_ngn: subtotal,
-            status: "paid",
-            shipping_address: shipping,
-            notes: notes || null,
-            paystack_reference: ref,
-            paystack_status: "success",
-          }
-        : {
-            retailer_id: null,
-            customer_type: "guest",
-            guest_name: name,
-            guest_email: email,
-            guest_phone: phone,
-            total_ngn: subtotal,
-            status: "paid",
-            shipping_address: shipping,
-            notes: notes || null,
-            paystack_reference: ref,
-            paystack_status: "success",
-          };
+      const orderPayload = {
+        retailer_id: user?.id ?? null,
+        customer_type: user ? "retailer" : "guest",
+        guest_name: user ? null : name,
+        guest_email: user ? null : email,
+        guest_phone: user ? null : phone,
+        total_ngn: subtotal,
+        status: "paid",
+        shipping_address: shipping,
+        notes: notes || null,
+        paystack_reference: ref,
+        paystack_status: "success",
+      };
 
       const { data: order, error: orderErr } = await supabase
         .from("orders")
