@@ -23,6 +23,8 @@ type EditState = {
   sizes: string;
   images: string[];
   videos: string[];
+  retail_price_ngn: number;
+  compare_at_price_ngn: number;
 };
 
 const empty: EditState = {
@@ -35,6 +37,8 @@ const empty: EditState = {
   sizes: "",
   images: [],
   videos: [],
+  retail_price_ngn: 0,
+  compare_at_price_ngn: 0,
 };
 
 function AdminProducts() {
