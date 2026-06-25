@@ -1,4 +1,4 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { Lock } from "lucide-react";
@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { SiteLayout } from "@/components/site-layout";
 import { fetchProduct, formatNgn, resolveImage, tierForQty } from "@/lib/products";
 import { useAuth } from "@/lib/auth-context";
+import { useCart } from "@/lib/cart-context";
 
 export const Route = createFileRoute("/catalog/$id")({
   component: ProductPage,
@@ -14,6 +15,8 @@ export const Route = createFileRoute("/catalog/$id")({
 function ProductPage() {
   const { id } = Route.useParams();
   const { isApprovedRetailer, user } = useAuth();
+  const { addItem } = useCart();
+  const navigate = useNavigate();
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["product", id],
