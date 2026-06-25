@@ -285,6 +285,10 @@ export type Database = {
     Functions: {
       is_admin: { Args: { _uid: string }; Returns: boolean }
       is_approved_retailer: { Args: { _uid: string }; Returns: boolean }
+      review_retailer_application: {
+        Args: { _application_id: string; _decision: string; _notes?: string }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never

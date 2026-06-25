@@ -12,7 +12,7 @@ const navItems = [
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
-  const { user, profile, signOut, isApprovedRetailer } = useAuth();
+  const { user, profile, signOut, isApprovedRetailer, isAdmin } = useAuth();
   const { count } = useCart();
 
   return (
@@ -45,6 +45,14 @@ export function SiteHeader() {
               >
                 {isApprovedRetailer ? "Account" : "Dashboard"}
               </Link>
+              {isAdmin && (
+                <Link
+                  to="/admin"
+                  className="text-xs font-medium uppercase tracking-[0.18em] text-accent-foreground hover:text-primary [&.active]:text-primary"
+                >
+                  Admin
+                </Link>
+              )}
               <span className="text-xs text-muted-foreground">
                 {profile?.full_name || user.email}
               </span>
