@@ -147,21 +147,23 @@ function CartPage() {
                 Shipping and any applicable duties are calculated at checkout. Bank-verified
                 wholesale invoicing on order confirmation.
               </p>
-              {!isApprovedRetailer ? (
+              <button
+                onClick={() => navigate({ to: "/checkout" })}
+                disabled={items.some((i) => {
+                  const m = i.kind === "wholesale" ? (productMap.get(i.productId)?.moq ?? i.moq) : 1;
+                  return i.qty < m;
+                })}
+                className="mt-6 w-full rounded-sm bg-primary px-6 py-4 text-xs font-medium uppercase tracking-[0.22em] text-primary-foreground hover:bg-accent hover:text-accent-foreground disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                Proceed to Checkout
+              </button>
+              {!isApprovedRetailer && (
                 <Link
                   to={user ? "/apply" : "/auth"}
-                  className="mt-6 block rounded-sm border border-foreground px-6 py-4 text-center text-xs font-medium uppercase tracking-[0.22em] text-foreground hover:bg-foreground hover:text-background"
+                  className="mt-3 block text-center text-[0.65rem] uppercase tracking-widest text-muted-foreground hover:text-primary"
                 >
-                  Unlock wholesale to checkout
+                  Buying 12+? Apply for wholesale pricing →
                 </Link>
-              ) : (
-                <button
-                  onClick={() => navigate({ to: "/checkout" })}
-                  disabled={items.some((i) => i.qty < (productMap.get(i.productId)?.moq ?? i.moq))}
-                  className="mt-6 w-full rounded-sm bg-primary px-6 py-4 text-xs font-medium uppercase tracking-[0.22em] text-primary-foreground hover:bg-accent hover:text-accent-foreground disabled:cursor-not-allowed disabled:opacity-40"
-                >
-                  Proceed to Checkout
-                </button>
               )}
             </aside>
           </div>
