@@ -81,6 +81,8 @@ function AdminProducts() {
         sizes: p.sizes.split(",").map((s) => s.trim()).filter(Boolean),
         images: p.images,
         videos: p.videos,
+        retail_price_ngn: p.retail_price_ngn,
+        compare_at_price_ngn: p.compare_at_price_ngn > 0 ? p.compare_at_price_ngn : null,
       };
       if (p.id) {
         const { error } = await supabase.from("products").update(payload).eq("id", p.id);
