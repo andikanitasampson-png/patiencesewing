@@ -9,6 +9,7 @@ export type CartItem = {
   qty: number;
   unitPriceNgn: number; // snapshot at time of add; cart page recomputes via tiers
   moq: number;
+  kind: "retail" | "wholesale";
 };
 
 type CartState = {
@@ -25,8 +26,8 @@ const CartContext = createContext<CartState | undefined>(undefined);
 
 const STORAGE_KEY = "ps_cart_v1";
 
-export const lineKey = (i: Pick<CartItem, "productId" | "color" | "size">) =>
-  `${i.productId}::${i.color}::${i.size}`;
+export const lineKey = (i: Pick<CartItem, "productId" | "color" | "size" | "kind">) =>
+  `${i.productId}::${i.kind}::${i.color}::${i.size}`;
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);

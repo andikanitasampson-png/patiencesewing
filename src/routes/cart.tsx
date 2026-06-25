@@ -27,9 +27,10 @@ function CartPage() {
     productQueries.map((q, idx) => [uniqueIds[idx], q.data] as const),
   );
 
-  // Recompute unit prices live from tiers when qty changes
+  // Recompute wholesale unit prices live from tiers when qty changes; retail stays fixed.
   useEffect(() => {
     for (const item of items) {
+      if (item.kind !== "wholesale") continue;
       const product = productMap.get(item.productId);
       if (!product) continue;
       const tiers = product.pricing_tiers.map((t) => ({
@@ -42,7 +43,7 @@ function CartPage() {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [items.map((i) => `${i.productId}-${i.qty}`).join("|"), productQueries.every((q) => q.data)]);
+  }, [items.map((i) => `${i.productId}-${i.kind}-${i.qty}`).join("|"), productQueries.every((q) => q.data)]);
 
   return (
     <SiteLayout>
@@ -65,7 +66,7 @@ function CartPage() {
             <div className="space-y-6">
               {items.map((item) => {
                 const product = productMap.get(item.productId);
-                const moq = product?.moq ?? item.moq;
+                const moq = item.kind === "wholesale" ? (product?.moq ?? item.moq) : 1;
                 const belowMoq = item.qty < moq;
                 const key = lineKey(item);
                 return (
@@ -91,7 +92,7 @@ function CartPage() {
                             {item.name}
                           </Link>
                           <p className="mt-1 text-xs uppercase tracking-widest text-muted-foreground">
-                            {item.color} · Size {item.size}
+                            {item.color} · Size {item.size} · {item.kind}
                           </p>
                         </div>
                         <button
@@ -146,21 +147,23 @@ function CartPage() {
                 Shipping and any applicable duties are calculated at checkout. Bank-verified
                 wholesale invoicing on order confirmation.
               </p>
-              {!isApprovedRetailer ? (
+              <button
+                onClick={() => navigate({ to: "/checkout" })}
+                disabled={items.some((i) => {
+                  const m = i.kind === "wholesale" ? (productMap.get(i.productId)?.moq ?? i.moq) : 1;
+                  return i.qty < m;
+                })}
+                className="mt-6 w-full rounded-sm bg-primary px-6 py-4 text-xs font-medium uppercase tracking-[0.22em] text-primary-foreground hover:bg-accent hover:text-accent-foreground disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                Proceed to Checkout
+              </button>
+              {!isApprovedRetailer && (
                 <Link
                   to={user ? "/apply" : "/auth"}
-                  className="mt-6 block rounded-sm border border-foreground px-6 py-4 text-center text-xs font-medium uppercase tracking-[0.22em] text-foreground hover:bg-foreground hover:text-background"
+                  className="mt-3 block text-center text-[0.65rem] uppercase tracking-widest text-muted-foreground hover:text-primary"
                 >
-                  Unlock wholesale to checkout
+                  Buying 12+? Apply for wholesale pricing →
                 </Link>
-              ) : (
-                <button
-                  onClick={() => navigate({ to: "/checkout" })}
-                  disabled={items.some((i) => i.qty < (productMap.get(i.productId)?.moq ?? i.moq))}
-                  className="mt-6 w-full rounded-sm bg-primary px-6 py-4 text-xs font-medium uppercase tracking-[0.22em] text-primary-foreground hover:bg-accent hover:text-accent-foreground disabled:cursor-not-allowed disabled:opacity-40"
-                >
-                  Proceed to Checkout
-                </button>
               )}
             </aside>
           </div>

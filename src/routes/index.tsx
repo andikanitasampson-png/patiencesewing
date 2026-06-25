@@ -1,55 +1,51 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { SiteLayout } from "@/components/site-layout";
+import { fetchProducts, formatNgn, resolveImage, discountPct } from "@/lib/products";
 import heroImg from "@/assets/hero.jpg";
-import ankaraImg from "@/assets/product-ankara.jpg";
-import laceImg from "@/assets/product-lace.jpg";
-import adireImg from "@/assets/product-adire.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Patience Sewing — Premium African Fashion, Wholesale" },
+      { title: "Patience Sewing — Premium African Fashion, Retail & Wholesale" },
       {
         name: "description",
         content:
-          "Wholesale luxury African fashion. Minimum 12 pieces, maximum quality. Trusted by 500+ retailers.",
+          "Shop premium African fashion direct. Buy single pieces at retail, or unlock wholesale pricing from 12 pieces.",
       },
-      { property: "og:title", content: "Patience Sewing — Premium African Fashion, Wholesale" },
-      { property: "og:description", content: "Minimum 12 pieces. Maximum quality." },
+      { property: "og:title", content: "Patience Sewing — Premium African Fashion" },
+      { property: "og:description", content: "Retail and wholesale. Direct from our Lagos atelier." },
       { property: "og:image", content: heroImg },
     ],
   }),
   component: HomePage,
 });
 
-const featured = [
-  { name: "Ankara Wrap Dress", category: "Dresses", moq: 12, img: ankaraImg },
-  { name: "Lace Overlay Blouse", category: "Tops", moq: 24, img: laceImg },
-  { name: "Adire Midi Skirt", category: "Skirts", moq: 12, img: adireImg },
-];
-
 function HomePage() {
+  const { data: products } = useQuery({ queryKey: ["products"], queryFn: fetchProducts });
+  const featured = (products ?? []).slice(0, 3);
+
   return (
     <SiteLayout>
       {/* HERO */}
       <section className="relative">
         <div className="grid gap-0 lg:grid-cols-12">
           <div className="order-2 flex flex-col justify-center px-6 py-20 lg:order-1 lg:col-span-5 lg:px-16 lg:py-32">
-            <p className="eyebrow">Wholesale · Est. 2018</p>
+            <p className="eyebrow">Retail · Wholesale · Est. 2018</p>
             <h1 className="mt-6">
               Premium African Fashion,{" "}
-              <span className="italic text-primary">wholesale.</span>
+              <span className="italic text-primary">direct.</span>
             </h1>
             <p className="mt-8 max-w-md text-base leading-relaxed text-foreground/75">
-              Minimum 12 pieces. Maximum quality. We design and produce ready-to-wear
-              collections for retailers who treat fashion as craft.
+              Shop single pieces at retail, or unlock tiered wholesale pricing from 12 pieces.
+              Designed and produced in our Lagos atelier.
             </p>
             <div className="mt-10 flex flex-wrap gap-3">
               <Link
                 to="/catalog"
                 className="rounded-sm bg-primary px-7 py-4 text-xs font-medium uppercase tracking-[0.22em] text-primary-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
               >
-                Browse Collection
+                Shop the Collection
               </Link>
               <Link
                 to="/apply"
@@ -76,13 +72,11 @@ function HomePage() {
           </div>
 
           <div className="order-1 lg:order-2 lg:col-span-7">
-            <div className="relative h-[calc(60vh-4rem)] min-h-[420px] overflow-hidden bg-secondary lg:h-[calc(100vh-5rem)]">
+            <div className="relative flex h-[70vh] min-h-[480px] items-center justify-center overflow-hidden bg-secondary lg:h-[calc(100vh-5rem)]">
               <img
                 src={heroImg}
                 alt="Editorial shot of an Ankara wrap dress in burnt orange"
-                width={1600}
-                height={1920}
-                className="h-full w-full object-cover"
+                className="h-full w-full object-contain"
               />
             </div>
           </div>
@@ -105,29 +99,45 @@ function HomePage() {
         </div>
 
         <div className="mt-12 grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
-          {featured.map((p) => (
-            <Link to="/catalog" key={p.name} className="group">
-              <div className="aspect-[4/5] overflow-hidden border border-border bg-secondary">
-                <img
-                  src={p.img}
-                  alt={p.name}
-                  loading="lazy"
-                  width={1024}
-                  height={1280}
-                  className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                />
-              </div>
-              <div className="mt-5 flex items-start justify-between">
-                <div>
-                  <p className="eyebrow text-[0.6rem]">{p.category}</p>
-                  <h3 className="mt-1 text-xl">{p.name}</h3>
+          {featured.map((p) => {
+            const compare = Number(p.compare_at_price_ngn ?? 0);
+            const price = Number(p.retail_price_ngn ?? 0);
+            const pct = discountPct(p);
+            return (
+              <Link to="/catalog/$id" params={{ id: p.id }} key={p.id} className="group">
+                <div className="relative aspect-[4/5] overflow-hidden border border-border bg-secondary">
+                  <img
+                    src={resolveImage(p.images[0])}
+                    alt={p.name}
+                    loading="lazy"
+                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                  {pct && (
+                    <span className="absolute left-3 top-3 rounded-sm bg-destructive px-2 py-1 text-[0.6rem] font-medium uppercase tracking-widest text-destructive-foreground">
+                      −{pct}% Off
+                    </span>
+                  )}
                 </div>
-                <span className="rounded-sm border border-border px-2 py-1 text-[0.6rem] uppercase tracking-widest text-muted-foreground">
-                  MOQ {p.moq}
-                </span>
-              </div>
-            </Link>
-          ))}
+                <div className="mt-5 flex items-start justify-between">
+                  <div>
+                    <p className="eyebrow text-[0.6rem]">{p.category}</p>
+                    <h3 className="mt-1 text-xl">{p.name}</h3>
+                    <div className="mt-2 flex items-baseline gap-2">
+                      {price > 0 && (
+                        <span className="text-base font-medium text-primary">{formatNgn(price)}</span>
+                      )}
+                      {compare > price && (
+                        <span className="text-xs text-muted-foreground line-through">{formatNgn(compare)}</span>
+                      )}
+                    </div>
+                  </div>
+                  <span className="rounded-sm border border-border px-2 py-1 text-[0.6rem] uppercase tracking-widest text-muted-foreground">
+                    MOQ {p.moq}
+                  </span>
+                </div>
+              </Link>
+            );
+          })}
         </div>
       </section>
 

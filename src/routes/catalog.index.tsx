@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { Lock } from "lucide-react";
 import { SiteLayout } from "@/components/site-layout";
-import { fetchProducts, formatNgn, resolveImage, startingPrice } from "@/lib/products";
+import { fetchProducts, formatNgn, resolveImage, startingPrice, discountPct } from "@/lib/products";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
 
@@ -109,6 +109,9 @@ function CatalogPage() {
               const fromPrice = isApprovedRetailer
                 ? startingPrice(tiers.map((t: any) => ({ ...t, unit_price_ngn: Number(t.unit_price_ngn) })))
                 : null;
+              const retail = Number(p.retail_price_ngn ?? 0);
+              const compare = Number(p.compare_at_price_ngn ?? 0);
+              const pct = discountPct(p);
 
               return (
                 <Link
@@ -127,19 +130,33 @@ function CatalogPage() {
                     <span className="absolute left-3 top-3 rounded-sm bg-background/90 px-2 py-1 text-[0.6rem] uppercase tracking-widest text-foreground">
                       Min. {p.moq} pcs
                     </span>
+                    {pct && (
+                      <span className="absolute right-3 top-3 rounded-sm bg-destructive px-2 py-1 text-[0.6rem] font-medium uppercase tracking-widest text-destructive-foreground">
+                        −{pct}%
+                      </span>
+                    )}
                   </div>
                   <div className="mt-5">
                     <p className="eyebrow text-[0.6rem]">{p.category}</p>
                     <h3 className="mt-1 text-xl">{p.name}</h3>
                     <p className="mt-2 text-xs text-muted-foreground">{p.fabric}</p>
 
+                    {retail > 0 && (
+                      <div className="mt-3 flex items-baseline gap-2">
+                        <span className="text-sm font-medium text-primary">{formatNgn(retail)}</span>
+                        {compare > retail && (
+                          <span className="text-xs text-muted-foreground line-through">{formatNgn(compare)}</span>
+                        )}
+                      </div>
+                    )}
+
                     {isApprovedRetailer && fromPrice ? (
-                      <p className="mt-3 text-sm font-medium text-primary">
-                        From {formatNgn(fromPrice)} / piece
+                      <p className="mt-1 text-xs text-accent-foreground">
+                        Wholesale from {formatNgn(fromPrice)} / pc
                       </p>
                     ) : (
-                      <p className="mt-3 inline-flex items-center gap-2 text-xs text-muted-foreground">
-                        <Lock className="h-3 w-3" /> Sign in to see wholesale pricing
+                      <p className="mt-1 inline-flex items-center gap-1.5 text-[0.65rem] text-muted-foreground">
+                        <Lock className="h-2.5 w-2.5" /> Sign in for wholesale
                       </p>
                     )}
                   </div>
