@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { Lock } from "lucide-react";
 import { SiteLayout } from "@/components/site-layout";
-import { fetchProducts, formatNgn, resolveImage, startingPrice } from "@/lib/products";
+import { fetchProducts, formatNgn, resolveImage, startingPrice, discountPct } from "@/lib/products";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
 
