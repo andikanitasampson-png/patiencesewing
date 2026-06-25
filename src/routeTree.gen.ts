@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CatalogRouteImport } from './routes/catalog'
 import { Route as CartRouteImport } from './routes/cart'
@@ -19,6 +20,11 @@ import { Route as CatalogIndexRouteImport } from './routes/catalog.index'
 import { Route as OrdersIdRouteImport } from './routes/orders.$id'
 import { Route as CatalogIdRouteImport } from './routes/catalog.$id'
 
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CheckoutRoute = CheckoutRouteImport.update({
   id: '/checkout',
   path: '/checkout',
@@ -72,6 +78,7 @@ export interface FileRoutesByFullPath {
   '/cart': typeof CartRoute
   '/catalog': typeof CatalogRouteWithChildren
   '/checkout': typeof CheckoutRoute
+  '/dashboard': typeof DashboardRoute
   '/catalog/$id': typeof CatalogIdRoute
   '/orders/$id': typeof OrdersIdRoute
   '/catalog/': typeof CatalogIndexRoute
@@ -82,6 +89,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
+  '/dashboard': typeof DashboardRoute
   '/catalog/$id': typeof CatalogIdRoute
   '/orders/$id': typeof OrdersIdRoute
   '/catalog': typeof CatalogIndexRoute
@@ -94,6 +102,7 @@ export interface FileRoutesById {
   '/cart': typeof CartRoute
   '/catalog': typeof CatalogRouteWithChildren
   '/checkout': typeof CheckoutRoute
+  '/dashboard': typeof DashboardRoute
   '/catalog/$id': typeof CatalogIdRoute
   '/orders/$id': typeof OrdersIdRoute
   '/catalog/': typeof CatalogIndexRoute
@@ -107,6 +116,7 @@ export interface FileRouteTypes {
     | '/cart'
     | '/catalog'
     | '/checkout'
+    | '/dashboard'
     | '/catalog/$id'
     | '/orders/$id'
     | '/catalog/'
@@ -117,6 +127,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/cart'
     | '/checkout'
+    | '/dashboard'
     | '/catalog/$id'
     | '/orders/$id'
     | '/catalog'
@@ -128,6 +139,7 @@ export interface FileRouteTypes {
     | '/cart'
     | '/catalog'
     | '/checkout'
+    | '/dashboard'
     | '/catalog/$id'
     | '/orders/$id'
     | '/catalog/'
@@ -140,11 +152,19 @@ export interface RootRouteChildren {
   CartRoute: typeof CartRoute
   CatalogRoute: typeof CatalogRouteWithChildren
   CheckoutRoute: typeof CheckoutRoute
+  DashboardRoute: typeof DashboardRoute
   OrdersIdRoute: typeof OrdersIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/checkout': {
       id: '/checkout'
       path: '/checkout'
@@ -231,6 +251,7 @@ const rootRouteChildren: RootRouteChildren = {
   CartRoute: CartRoute,
   CatalogRoute: CatalogRouteWithChildren,
   CheckoutRoute: CheckoutRoute,
+  DashboardRoute: DashboardRoute,
   OrdersIdRoute: OrdersIdRoute,
 }
 export const routeTree = rootRouteImport

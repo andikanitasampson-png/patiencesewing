@@ -39,14 +39,12 @@ export function SiteHeader() {
         <div className="hidden items-center gap-4 md:flex">
           {user ? (
             <>
-              {isApprovedRetailer && (
-                <Link
-                  to="/catalog"
-                  className="text-xs font-medium uppercase tracking-[0.18em] text-foreground/70 hover:text-primary"
-                >
-                  Account
-                </Link>
-              )}
+              <Link
+                to="/dashboard"
+                className="text-xs font-medium uppercase tracking-[0.18em] text-foreground/70 hover:text-primary [&.active]:text-primary"
+              >
+                {isApprovedRetailer ? "Account" : "Dashboard"}
+              </Link>
               <span className="text-xs text-muted-foreground">
                 {profile?.full_name || user.email}
               </span>
