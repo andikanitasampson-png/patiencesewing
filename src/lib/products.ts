@@ -43,6 +43,13 @@ export function startingPrice(tiers: PricingTier[]): number | null {
   return Math.min(...tiers.map((t) => Number(t.unit_price_ngn)));
 }
 
+export function discountPct(p: Pick<Product, "retail_price_ngn" | "compare_at_price_ngn">): number | null {
+  const compare = Number(p.compare_at_price_ngn ?? 0);
+  const price = Number(p.retail_price_ngn ?? 0);
+  if (!compare || compare <= price) return null;
+  return Math.round(((compare - price) / compare) * 100);
+}
+
 // Resolve seed-style /src/assets/xxx paths to bundled URLs
 import ankara from "@/assets/product-ankara.jpg";
 import lace from "@/assets/product-lace.jpg";
