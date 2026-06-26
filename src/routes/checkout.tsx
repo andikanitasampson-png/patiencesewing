@@ -6,6 +6,7 @@ import { useCart } from "@/lib/cart-context";
 import { useAuth } from "@/lib/auth-context";
 import { formatNgn, resolveImage } from "@/lib/products";
 import { supabase } from "@/integrations/supabase/client";
+import { createGuestOrder } from "@/lib/guest-checkout.functions";
 
 export const Route = createFileRoute("/checkout")({
   component: CheckoutPage,
@@ -49,48 +50,65 @@ function CheckoutPage() {
     setSubmitting(true);
     try {
       const ref = `PS_STUB_${Date.now()}_${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
-      const shipping = `${name}${business ? ` · ${business}` : ""}\n${phone}\n${email}\n${address}`;
 
-      const orderPayload = {
-        retailer_id: user?.id ?? null,
-        customer_type: user ? "retailer" : "guest",
-        guest_name: user ? null : name,
-        guest_email: user ? null : email,
-        guest_phone: user ? null : phone,
-        total_ngn: subtotal,
-        status: "paid",
-        shipping_address: shipping,
-        notes: notes || null,
-        paystack_reference: ref,
-        paystack_status: "success",
-      };
-
-      const { data: order, error: orderErr } = await supabase
-        .from("orders")
-        .insert(orderPayload)
-        .select("id")
-        .single();
-
-      if (orderErr || !order) throw orderErr ?? new Error("Order creation failed");
-
-      const rows = items.map((i) => ({
-        order_id: order.id,
-        product_id: i.productId,
-        product_name: i.name,
-        color: i.color,
-        size: i.size,
-        quantity: i.qty,
-        unit_price_ngn: i.unitPriceNgn,
-        subtotal_ngn: i.qty * i.unitPriceNgn,
-      }));
-      const { error: itemsErr } = await supabase.from("order_items").insert(rows);
-      if (itemsErr) throw itemsErr;
-
-      clear();
-      toast.success("Payment confirmed");
       if (user) {
+        const shipping = `${name}${business ? ` · ${business}` : ""}\n${phone}\n${email}\n${address}`;
+        const { data: order, error: orderErr } = await supabase
+          .from("orders")
+          .insert({
+            retailer_id: user.id,
+            customer_type: "retailer",
+            guest_name: null,
+            guest_email: null,
+            guest_phone: null,
+            total_ngn: subtotal,
+            status: "paid",
+            shipping_address: shipping,
+            notes: notes || null,
+            paystack_reference: ref,
+            paystack_status: "success",
+          })
+          .select("id")
+          .single();
+        if (orderErr || !order) throw orderErr ?? new Error("Order creation failed");
+
+        const rows = items.map((i) => ({
+          order_id: order.id,
+          product_id: i.productId,
+          product_name: i.name,
+          color: i.color,
+          size: i.size,
+          quantity: i.qty,
+          unit_price_ngn: i.unitPriceNgn,
+          subtotal_ngn: i.qty * i.unitPriceNgn,
+        }));
+        const { error: itemsErr } = await supabase.from("order_items").insert(rows);
+        if (itemsErr) throw itemsErr;
+
+        clear();
+        toast.success("Payment confirmed");
         navigate({ to: "/orders/$id", params: { id: order.id } });
       } else {
+        await createGuestOrder({
+          data: {
+            name,
+            business: business || null,
+            phone,
+            email,
+            address,
+            notes: notes || null,
+            paystackReference: ref,
+            items: items.map((i) => ({
+              productId: i.productId,
+              name: i.name,
+              color: i.color,
+              size: i.size,
+              qty: i.qty,
+              unitPriceNgn: i.unitPriceNgn,
+            })),
+          },
+        });
+        clear();
         toast.success("Order placed", {
           description: `Reference ${ref}. We'll email ${email} with shipping updates.`,
         });
