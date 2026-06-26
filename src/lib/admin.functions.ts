@@ -30,9 +30,12 @@ export const setUserRole = createServerFn({ method: "POST" })
   .inputValidator((d) => setRoleSchema.parse(d))
   .handler(async ({ data, context }) => {
     const supabaseAdmin = await assertAdmin(context.userId);
-    const patch: { role: string; retailer_status?: string } = { role: data.role };
+    const patch: Record<string, string> = { role: data.role };
     if (data.role === "retailer") patch.retailer_status = "approved";
-    const { error } = await supabaseAdmin.from("profiles").update(patch).eq("id", data.userId);
+    const { error } = await supabaseAdmin
+      .from("profiles")
+      .update(patch as never)
+      .eq("id", data.userId);
     if (error) throw error;
     return { ok: true };
   });
@@ -50,23 +53,24 @@ export const reviewRetailerApplication = createServerFn({ method: "POST" })
         admin_notes: data.notes ?? null,
         reviewed_at: new Date().toISOString(),
         reviewed_by: context.userId,
-      })
+      } as never)
       .eq("id", data.applicationId)
       .select("user_id")
       .maybeSingle();
     if (appErr) throw appErr;
-    if (!app) throw new Error("Application not found");
+    if (!app || !app.user_id) throw new Error("Application not found");
 
-    const profilePatch: { retailer_status: string; role?: string } = {
+    const profilePatch: Record<string, string> = {
       retailer_status: data.decision,
     };
     if (data.decision === "approved") profilePatch.role = "retailer";
 
     const { error: profErr } = await supabaseAdmin
       .from("profiles")
-      .update(profilePatch)
+      .update(profilePatch as never)
       .eq("id", app.user_id);
     if (profErr) throw profErr;
 
     return { ok: true };
   });
+
