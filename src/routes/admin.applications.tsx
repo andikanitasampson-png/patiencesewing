@@ -4,6 +4,7 @@ import { useState } from "react";
 import { CheckCircle2, Clock, XCircle } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { reviewRetailerApplication } from "@/lib/admin.functions";
 
 export const Route = createFileRoute("/admin/applications")({
   component: AdminApplications,
