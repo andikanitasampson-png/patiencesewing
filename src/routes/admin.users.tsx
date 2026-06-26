@@ -36,9 +36,8 @@ function AdminUsers() {
   });
 
   const setRole = useMutation({
-    mutationFn: async ({ userId, role }: { userId: string; role: string }) => {
-      const { error } = await supabase.rpc("set_user_role", { _user_id: userId, _role: role });
-      if (error) throw error;
+    mutationFn: async ({ userId, role }: { userId: string; role: "customer" | "retailer" | "admin" }) => {
+      await setUserRole({ data: { userId, role } });
     },
     onSuccess: () => {
       toast.success("Role updated");
