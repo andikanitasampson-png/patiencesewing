@@ -4,6 +4,7 @@ import { useState } from "react";
 import { CheckCircle2, Clock, XCircle } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { reviewRetailerApplication } from "@/lib/admin.functions";
 
 export const Route = createFileRoute("/admin/applications")({
   component: AdminApplications,
@@ -40,12 +41,9 @@ function AdminApplications() {
 
   const review = useMutation({
     mutationFn: async ({ id, decision, notes }: { id: string; decision: "approved" | "rejected"; notes?: string }) => {
-      const { error } = await supabase.rpc("review_retailer_application", {
-        _application_id: id,
-        _decision: decision,
-        _notes: notes,
+      await reviewRetailerApplication({
+        data: { applicationId: id, decision, notes: notes ?? null },
       });
-      if (error) throw error;
     },
     onSuccess: (_, vars) => {
       toast.success(vars.decision === "approved" ? "Retailer approved" : "Application rejected");

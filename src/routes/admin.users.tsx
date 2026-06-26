@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { setUserRole } from "@/lib/admin.functions";
 
 export const Route = createFileRoute("/admin/users")({
   component: AdminUsers,
@@ -35,9 +36,8 @@ function AdminUsers() {
   });
 
   const setRole = useMutation({
-    mutationFn: async ({ userId, role }: { userId: string; role: string }) => {
-      const { error } = await supabase.rpc("set_user_role", { _user_id: userId, _role: role });
-      if (error) throw error;
+    mutationFn: async ({ userId, role }: { userId: string; role: "customer" | "retailer" | "admin" }) => {
+      await setUserRole({ data: { userId, role } });
     },
     onSuccess: () => {
       toast.success("Role updated");
@@ -101,7 +101,7 @@ function AdminUsers() {
                       value={u.role}
                       disabled={setRole.isPending}
                       onChange={(e) => {
-                        const role = e.target.value;
+                        const role = e.target.value as "customer" | "retailer" | "admin";
                         if (role === u.role) return;
                         if (role === "admin" && !confirm(`Promote ${u.email} to ADMIN?`)) return;
                         setRole.mutate({ userId: u.id, role });
