@@ -101,7 +101,7 @@ function AdminUsers() {
                       value={u.role}
                       disabled={setRole.isPending}
                       onChange={(e) => {
-                        const role = e.target.value;
+                        const role = e.target.value as "customer" | "retailer" | "admin";
                         if (role === u.role) return;
                         if (role === "admin" && !confirm(`Promote ${u.email} to ADMIN?`)) return;
                         setRole.mutate({ userId: u.id, role });
