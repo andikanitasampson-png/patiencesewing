@@ -2,20 +2,23 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { SiteLayout } from "@/components/site-layout";
 import { fetchProducts, formatNgn, resolveImage, discountPct } from "@/lib/products";
-import heroImg from "@/assets/hero.jpg";
+import heroDesktop from "@/assets/hero-desktop.jpg";
+import heroDesktop2x from "@/assets/hero-desktop@2x.jpg";
+import heroMobile from "@/assets/hero-mobile.jpg";
+import heroMobile2x from "@/assets/hero-mobile@2x.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Patience Sewing — Premium African Fashion, Retail & Wholesale" },
+      { title: "Patience Sewing — Premium Fashion, Retail & Wholesale" },
       {
         name: "description",
         content:
-          "Shop premium African fashion direct. Buy single pieces at retail, or unlock wholesale pricing from 12 pieces.",
+          "Shop premium fashion direct. Buy single pieces at retail, or unlock wholesale pricing from 12 pieces.",
       },
-      { property: "og:title", content: "Patience Sewing — Premium African Fashion" },
+      { property: "og:title", content: "Patience Sewing — Premium Fashion" },
       { property: "og:description", content: "Retail and wholesale. Direct from our Lagos atelier." },
-      { property: "og:image", content: heroImg },
+      { property: "og:image", content: heroDesktop2x },
     ],
   }),
   component: HomePage,
@@ -33,7 +36,7 @@ function HomePage() {
           <div className="order-2 flex flex-col justify-center px-6 py-20 lg:order-1 lg:col-span-5 lg:px-16 lg:py-32">
             <p className="eyebrow">Retail · Wholesale · Est. 2018</p>
             <h1 className="mt-6">
-              Premium African Fashion,{" "}
+              Premium Fashion,{" "}
               <span className="italic text-primary">direct.</span>
             </h1>
             <p className="mt-8 max-w-md text-base leading-relaxed text-foreground/75">
@@ -73,11 +76,25 @@ function HomePage() {
 
           <div className="order-1 lg:order-2 lg:col-span-7">
             <div className="relative flex h-[70vh] min-h-[480px] items-center justify-center overflow-hidden bg-secondary lg:h-[calc(100vh-5rem)]">
-              <img
-                src={heroImg}
-                alt="Editorial shot of an Ankara wrap dress in burnt orange"
-                className="h-full w-full object-contain"
-              />
+              <picture>
+                <source
+                  media="(max-width: 767px)"
+                  srcSet={`${heroMobile} 1x, ${heroMobile2x} 2x`}
+                />
+                <source
+                  media="(min-width: 768px)"
+                  srcSet={`${heroDesktop} 1x, ${heroDesktop2x} 2x`}
+                />
+                <img
+                  src={heroDesktop}
+                  alt="Editorial shot of an Ankara wrap dress in burnt orange"
+                  className="h-full w-full object-cover object-center"
+                  fetchPriority="high"
+                  decoding="async"
+                  width={1600}
+                  height={1024}
+                />
+              </picture>
             </div>
           </div>
         </div>
