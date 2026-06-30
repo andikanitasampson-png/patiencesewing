@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { SiteLayout } from "@/components/site-layout";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
+import { submitRetailerApplication } from "@/lib/applications.functions";
 
 export const Route = createFileRoute("/apply")({
   head: () => ({
@@ -72,24 +73,30 @@ function ApplyPage() {
       return;
     }
     setBusy(true);
-    const { error } = await supabase.from("retailer_applications").insert({
-      user_id: user?.id ?? null,
-      business_name: form.business_name.trim(),
-      owner_name: form.owner_name.trim(),
-      phone: form.phone.trim(),
-      email: form.email.trim(),
-      business_address: form.business_address.trim(),
-      monthly_volume: form.monthly_volume,
-      social_links: {
-        instagram: form.instagram.trim() || null,
-        whatsapp: form.whatsapp.trim() || null,
-      },
-    });
-    setBusy(false);
-    if (error) {
-      toast.error("Could not submit application", { description: error.message });
+    try {
+      await submitRetailerApplication({
+        data: {
+          user_id: user?.id ?? null,
+          business_name: form.business_name.trim(),
+          owner_name: form.owner_name.trim(),
+          phone: form.phone.trim(),
+          email: form.email.trim(),
+          business_address: form.business_address.trim(),
+          monthly_volume: form.monthly_volume,
+          social_links: {
+            instagram: form.instagram.trim() || null,
+            whatsapp: form.whatsapp.trim() || null,
+          },
+        },
+      });
+    } catch (err) {
+      setBusy(false);
+      toast.error("Could not submit application", {
+        description: err instanceof Error ? err.message : "Please try again.",
+      });
       return;
     }
+    setBusy(false);
 
     if (user) {
       await supabase
