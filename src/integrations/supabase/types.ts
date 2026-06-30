@@ -304,7 +304,31 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_guest_order: {
+        Args: { _email: string; _order_id: string }
+        Returns: {
+          created_at: string
+          id: string
+          notes: string
+          paystack_reference: string
+          paystack_status: string
+          shipping_address: string
+          status: string
+          total_ngn: number
+        }[]
+      }
+      get_guest_order_items: {
+        Args: { _email: string; _order_id: string }
+        Returns: {
+          color: string
+          id: string
+          product_name: string
+          quantity: number
+          size: string
+          subtotal_ngn: number
+          unit_price_ngn: number
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
