@@ -10,15 +10,15 @@ import heroMobile2x from "@/assets/hero-mobile@2x.jpg";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Patience Sewing — Premium African Fashion, Retail & Wholesale" },
+      { title: "Patience Sewing — Premium Fashion, Retail & Wholesale" },
       {
         name: "description",
         content:
-          "Shop premium African fashion direct. Buy single pieces at retail, or unlock wholesale pricing from 12 pieces.",
+          "Shop premium fashion direct. Buy single pieces at retail, or unlock wholesale pricing from 12 pieces.",
       },
-      { property: "og:title", content: "Patience Sewing — Premium African Fashion" },
+      { property: "og:title", content: "Patience Sewing — Premium Fashion" },
       { property: "og:description", content: "Retail and wholesale. Direct from our Lagos atelier." },
-      { property: "og:image", content: heroImg },
+      { property: "og:image", content: heroDesktop2x },
     ],
   }),
   component: HomePage,
