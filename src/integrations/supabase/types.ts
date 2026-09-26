@@ -256,6 +256,8 @@ export type Database = {
           monthly_volume: string | null
           owner_name: string
           phone: string
+          reviewed_at: string | null
+          reviewed_by: string | null
           social_links: Json | null
           status: string
           submitted_at: string
@@ -270,6 +272,8 @@ export type Database = {
           monthly_volume?: string | null
           owner_name: string
           phone: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
           social_links?: Json | null
           status?: string
           submitted_at?: string
@@ -284,6 +288,8 @@ export type Database = {
           monthly_volume?: string | null
           owner_name?: string
           phone?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
           social_links?: Json | null
           status?: string
           submitted_at?: string
@@ -298,6 +304,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: []
       }
     }
     Views: {
