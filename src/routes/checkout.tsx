@@ -14,7 +14,7 @@ export const Route = createFileRoute("/checkout")({
 
 function CheckoutPage() {
   const { items, subtotal, clear } = useCart();
-  const { user, profile, loading } = useAuth();
+   const { user, profile, loading, isApprovedRetailer } = useAuth();
   const navigate = useNavigate();
 
   const isGuest = !user;
@@ -43,6 +43,10 @@ function CheckoutPage() {
   }, [loading, items.length, navigate]);
 
   const handlePay = async () => {
+    if (items.some((item) => item.kind === "wholesale") && !isApprovedRetailer) {
+      toast.error("Wholesale checkout requires an approved retailer account.");
+      return;
+    }
     if (!name || !phone || !address || !email) {
       toast.error("Please complete contact and shipping information.");
       return;
@@ -51,7 +55,7 @@ function CheckoutPage() {
     try {
       const ref = `PS_STUB_${Date.now()}_${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
 
-      if (user) {
+       if (user && isApprovedRetailer) {
         const shipping = `${name}${business ? ` · ${business}` : ""}\n${phone}\n${email}\n${address}`;
         const { data: order, error: orderErr } = await supabase
           .from("orders")
