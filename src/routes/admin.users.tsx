@@ -26,12 +26,17 @@ function AdminUsers() {
   const { data, isLoading } = useQuery({
     queryKey: ["admin-users"],
     queryFn: async (): Promise<Row[]> => {
-      const { data, error } = await supabase
+       const { data, error } = await supabase
         .from("profiles")
-        .select("id,email,full_name,business_name,retailer_status,created_at,user_roles(role)")
+         .select("id,email,full_name,business_name,retailer_status,created_at")
         .order("created_at", { ascending: false });
       if (error) throw error;
-       return (data ?? []).map((u) => ({ ...u, role: u.user_roles?.some((r) => r.role === "admin") ? "admin" : u.user_roles?.some((r) => r.role === "retailer") ? "retailer" : "customer" })) as Row[];
+       const { data: memberships, error: roleError } = await supabase.from("user_roles").select("user_id,role");
+       if (roleError) throw roleError;
+       return (data ?? []).map((u) => {
+         const userRoles = (memberships ?? []).filter((r) => r.user_id === u.id).map((r) => r.role);
+         return { ...u, role: userRoles.includes("admin") ? "admin" : userRoles.includes("retailer") ? "retailer" : "customer" };
+       });
     },
   });
 
