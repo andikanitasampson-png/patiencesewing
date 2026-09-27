@@ -12,11 +12,12 @@ function AdminOverview() {
   const { data } = useQuery({
     queryKey: ["admin-overview"],
     queryFn: async () => {
-      const [pending, orders, products, retailers] = await Promise.all([
+       const [pending, orders, products, retailers, guestOrders] = await Promise.all([
         supabase.from("retailer_applications").select("id", { count: "exact", head: true }).eq("status", "pending"),
         supabase.from("orders").select("id, total_ngn, status"),
         supabase.from("products").select("id", { count: "exact", head: true }),
         supabase.from("profiles").select("id", { count: "exact", head: true }).eq("retailer_status", "approved"),
+         supabase.from("orders").select("id", { count: "exact", head: true }).is("retailer_id", null),
       ]);
       const allOrders = orders.data ?? [];
       return {
@@ -27,16 +28,18 @@ function AdminOverview() {
           .reduce((sum, o) => sum + Number(o.total_ngn), 0),
         productCount: products.count ?? 0,
         retailerCount: retailers.count ?? 0,
+         guestCount: guestOrders.count ?? 0,
       };
     },
   });
 
   return (
-    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-5">
       <Stat icon={<ClipboardList className="h-4 w-4" />} label="Pending applications" value={data?.pendingApps ?? "—"} href="/admin/applications" />
       <Stat icon={<ShoppingBag className="h-4 w-4" />} label="Orders" value={data?.orderCount ?? "—"} href="/admin/orders" />
       <Stat icon={<Package className="h-4 w-4" />} label="Active revenue" value={data ? formatNgn(data.revenue) : "—"} />
       <Stat icon={<Users className="h-4 w-4" />} label="Approved retailers" value={data?.retailerCount ?? "—"} />
+       <Stat icon={<Users className="h-4 w-4" />} label="Guest customers" value={data?.guestCount ?? "—"} href="/admin/orders" />
     </div>
   );
 }
