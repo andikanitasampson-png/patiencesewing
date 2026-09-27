@@ -89,7 +89,7 @@ function CheckoutPage() {
         toast.success("Payment confirmed");
         navigate({ to: "/orders/$id", params: { id: order.id } });
       } else {
-        await createGuestOrder({
+         const result = await createGuestOrder({
           data: {
             name,
             business: business || null,
@@ -108,11 +108,12 @@ function CheckoutPage() {
             })),
           },
         });
+         sessionStorage.setItem(`guest-order-email:${result.orderId}`, email);
         clear();
         toast.success("Order placed", {
           description: `Reference ${ref}. We'll email ${email} with shipping updates.`,
         });
-        navigate({ to: "/" });
+         navigate({ to: "/orders/$id", params: { id: result.orderId } });
       }
     } catch (e) {
       console.error(e);
