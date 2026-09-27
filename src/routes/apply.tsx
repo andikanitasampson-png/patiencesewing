@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { z } from "zod";
 import { toast } from "sonner";
 import { SiteLayout } from "@/components/site-layout";
-import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
 import { submitRetailerApplication } from "@/lib/applications.functions";
 
@@ -97,20 +96,6 @@ function ApplyPage() {
       return;
     }
     setBusy(false);
-
-    if (user) {
-      await supabase
-        .from("profiles")
-        .update({
-          business_name: form.business_name.trim(),
-          phone: form.phone.trim(),
-          business_address: form.business_address.trim(),
-          monthly_volume: form.monthly_volume,
-          retailer_status: "pending",
-          role: "retailer",
-        })
-        .eq("id", user.id);
-    }
 
     setSubmitted(true);
     toast.success("Application received");
