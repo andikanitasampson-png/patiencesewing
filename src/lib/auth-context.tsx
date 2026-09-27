@@ -31,6 +31,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [roles, setRoles] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
 
   const loadProfile = async (uid: string) => {
@@ -39,6 +40,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .select("id, full_name, business_name, phone, email, role, retailer_status, monthly_volume, business_address")
       .eq("id", uid)
       .maybeSingle();
+    const { data: memberships } = await supabase.from("user_roles").select("role").eq("user_id", uid);
+    setRoles((memberships ?? []).map((r) => r.role));
     setProfile((data as Profile | null) ?? null);
   };
 
@@ -51,13 +54,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setTimeout(() => void loadProfile(sess.user.id), 0);
       } else {
         setProfile(null);
+        setRoles([]);
       }
     });
 
-    supabase.auth.getSession().then(({ data }) => {
+    supabase.auth.getSession().then(async ({ data }) => {
       setSession(data.session);
       setUser(data.session?.user ?? null);
-      if (data.session?.user) void loadProfile(data.session.user.id);
+      if (data.session?.user) await loadProfile(data.session.user.id);
       setLoading(false);
     });
 
@@ -71,11 +75,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signOut = async () => {
     await supabase.auth.signOut();
     setProfile(null);
+    setRoles([]);
   };
 
   const isApprovedRetailer =
-    !!profile && (profile.role === "admin" || (profile.role === "retailer" && profile.retailer_status === "approved"));
-  const isAdmin = profile?.role === "admin";
+    roles.includes("admin") || (roles.includes("retailer") && profile?.retailer_status === "approved");
+  const isAdmin = roles.includes("admin");
 
   return (
     <AuthContext.Provider

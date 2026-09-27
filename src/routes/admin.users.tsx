@@ -26,12 +26,17 @@ function AdminUsers() {
   const { data, isLoading } = useQuery({
     queryKey: ["admin-users"],
     queryFn: async (): Promise<Row[]> => {
-      const { data, error } = await supabase
+       const { data, error } = await supabase
         .from("profiles")
-        .select("id,email,full_name,business_name,role,retailer_status,created_at")
+         .select("id,email,full_name,business_name,retailer_status,created_at")
         .order("created_at", { ascending: false });
       if (error) throw error;
-      return (data as Row[]) ?? [];
+       const { data: memberships, error: roleError } = await supabase.from("user_roles").select("user_id,role");
+       if (roleError) throw roleError;
+       return (data ?? []).map((u) => {
+         const userRoles = (memberships ?? []).filter((r) => r.user_id === u.id).map((r) => r.role);
+         return { ...u, role: userRoles.includes("admin") ? "admin" : userRoles.includes("retailer") ? "retailer" : "customer" };
+       });
     },
   });
 
@@ -103,7 +108,7 @@ function AdminUsers() {
                       onChange={(e) => {
                         const role = e.target.value as "customer" | "retailer" | "admin";
                         if (role === u.role) return;
-                        if (role === "admin" && !confirm(`Promote ${u.email} to ADMIN?`)) return;
+                         if ((role === "admin" || u.role === "admin") && !confirm(`${role === "admin" ? "Promote" : "Demote"} ${u.email} ${role === "admin" ? "to" : "from"} admin?`)) return;
                         setRole.mutate({ userId: u.id, role });
                       }}
                       className="rounded-sm border border-border bg-background px-3 py-1.5 text-xs uppercase tracking-widest focus:border-primary focus:outline-none"

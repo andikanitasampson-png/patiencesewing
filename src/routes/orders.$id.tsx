@@ -1,11 +1,22 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import { CheckCircle2 } from "lucide-react";
 import { SiteLayout } from "@/components/site-layout";
 import { supabase } from "@/integrations/supabase/client";
 import { formatNgn } from "@/lib/products";
+import { getGuestOrder } from "@/lib/guest-order.functions";
+import { useAuth } from "@/lib/auth-context";
 
 export const Route = createFileRoute("/orders/$id")({
+  head: () => ({ meta: [
+    { title: "Order details — Patience Sewing Ltd" },
+    { name: "description", content: "View your Patience Sewing Ltd order details." },
+    { property: "og:title", content: "Order details — Patience Sewing Ltd" },
+    { property: "og:description", content: "View your Patience Sewing Ltd order details." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: OrderPage,
 });
 
@@ -32,8 +43,11 @@ type OrderItemRow = {
 
 function OrderPage() {
   const { id } = Route.useParams();
+  const { user } = useAuth();
+  const [email, setEmail] = useState("");
+  const [lookupEmail, setLookupEmail] = useState(() => typeof window === "undefined" ? "" : sessionStorage.getItem(`guest-order-email:${id}`) ?? "");
   const { data, isLoading, error } = useQuery({
-    queryKey: ["order", id],
+    queryKey: ["order", id, user?.id, lookupEmail],
     queryFn: async () => {
       const { data: order, error: oErr } = await supabase
         .from("orders")
@@ -41,7 +55,10 @@ function OrderPage() {
         .eq("id", id)
         .maybeSingle();
       if (oErr) throw oErr;
-      if (!order) return null;
+       if (!order) {
+         if (!lookupEmail) return null;
+         return getGuestOrder({ data: { id, email: lookupEmail } });
+       }
       const { data: items, error: iErr } = await supabase
         .from("order_items")
         .select("id, product_name, color, size, quantity, unit_price_ngn, subtotal_ngn")
@@ -60,7 +77,7 @@ function OrderPage() {
       </SiteLayout>
     );
   }
-  if (error || !data) throw notFound();
+   if (error || !data) return <SiteLayout><div className="mx-auto max-w-xl px-6 py-24"><h1 className="text-4xl">Find your order</h1><p className="mt-4 text-muted-foreground">Enter the email used at checkout to view this order.</p><form className="mt-6 flex gap-3" onSubmit={(event) => { event.preventDefault(); setLookupEmail(email.trim()); }}><input required type="email" value={email} onChange={(event) => setEmail(event.target.value)} className="min-w-0 flex-1 border border-border bg-background px-3 py-2" placeholder="Email address" /><button type="submit" className="bg-primary px-5 py-2 text-primary-foreground">View order</button></form>{lookupEmail && <p className="mt-3 text-sm text-destructive">No order found for that email.</p>}</div></SiteLayout>;
   const { order, items } = data;
 
   return (
@@ -71,7 +88,7 @@ function OrderPage() {
           <p className="eyebrow mt-6">Order Confirmed</p>
           <h1 className="mt-3 text-5xl">Thank you</h1>
           <p className="mt-4 text-sm text-muted-foreground">
-            Your wholesale order has been received. A confirmation invoice will follow by email
+             Your order has been received. A confirmation invoice will follow by email
             within the next business day.
           </p>
         </div>

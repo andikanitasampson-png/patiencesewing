@@ -18,7 +18,11 @@ type Row = {
   status: string;
   total_ngn: number;
   paystack_reference: string | null;
-  retailer_id: string;
+  retailer_id: string | null;
+  guest_name: string | null;
+  guest_email: string | null;
+  guest_phone: string | null;
+  shipping_address: string | null;
   retailer: { full_name: string | null; business_name: string | null; email: string } | null;
   item_count: number;
 };
@@ -32,7 +36,7 @@ function AdminOrders() {
     queryFn: async (): Promise<Row[]> => {
       let q = supabase
         .from("orders")
-        .select("id, created_at, status, total_ngn, paystack_reference, retailer_id, profiles!orders_retailer_id_fkey(full_name, business_name, email), order_items(id)")
+        .select("id, created_at, status, total_ngn, paystack_reference, retailer_id, guest_name, guest_email, guest_phone, shipping_address, profiles!orders_retailer_id_fkey(full_name, business_name, email), order_items(id)")
         .order("created_at", { ascending: false });
       if (filter !== "all") q = q.eq("status", filter);
       const { data, error } = await q;
@@ -44,6 +48,10 @@ function AdminOrders() {
         total_ngn: Number(o.total_ngn),
         paystack_reference: o.paystack_reference,
         retailer_id: o.retailer_id,
+        guest_name: o.guest_name,
+        guest_email: o.guest_email,
+        guest_phone: o.guest_phone,
+        shipping_address: o.shipping_address,
         retailer: o.profiles ?? null,
         item_count: Array.isArray(o.order_items) ? o.order_items.length : 0,
       }));
@@ -84,7 +92,7 @@ function AdminOrders() {
           <thead className="bg-secondary/40 text-left">
             <tr>
               <Th>Reference</Th>
-              <Th>Retailer</Th>
+              <Th>Customer</Th>
               <Th>Items</Th>
               <Th>Total</Th>
               <Th>Date</Th>
@@ -106,8 +114,10 @@ function AdminOrders() {
                     </Link>
                   </Td>
                   <Td>
-                    <div className="font-medium">{o.retailer?.business_name || o.retailer?.full_name || "—"}</div>
-                    <div className="text-xs text-muted-foreground">{o.retailer?.email}</div>
+                     <div className="font-medium">{o.retailer?.business_name || o.retailer?.full_name || o.guest_name || "—"}</div>
+                     <div className="text-xs text-muted-foreground">{o.retailer?.email || o.guest_email}</div>
+                     {o.guest_phone && <div className="text-xs text-muted-foreground">{o.guest_phone}</div>}
+                     {o.shipping_address && <div className="max-w-56 whitespace-pre-line text-xs text-muted-foreground">{o.shipping_address}</div>}
                   </Td>
                   <Td>{o.item_count}</Td>
                   <Td className="font-display">{formatNgn(o.total_ngn)}</Td>

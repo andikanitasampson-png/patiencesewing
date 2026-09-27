@@ -41,12 +41,12 @@ function AdminApplications() {
 
   const review = useMutation({
     mutationFn: async ({ id, decision, notes }: { id: string; decision: "approved" | "rejected"; notes?: string }) => {
-      await reviewRetailerApplication({
+       return reviewRetailerApplication({
         data: { applicationId: id, decision, notes: notes ?? null },
       });
     },
-    onSuccess: (_, vars) => {
-      toast.success(vars.decision === "approved" ? "Retailer approved" : "Application rejected");
+    onSuccess: (result, vars) => {
+      toast.success(result.accountRequired ? "Decision recorded. Retailer must create an account with their application email to access wholesale." : vars.decision === "approved" ? "Retailer approved" : "Application rejected");
       qc.invalidateQueries({ queryKey: ["admin-applications"] });
       qc.invalidateQueries({ queryKey: ["admin-overview"] });
     },

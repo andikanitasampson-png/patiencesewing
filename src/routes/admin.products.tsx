@@ -264,6 +264,10 @@ function EditModal({
 
   const handleUpload = async (files: FileList | null, kind: "image" | "video") => {
     if (!files || files.length === 0) return;
+    if (kind === "video" && Array.from(files).some((file) => !file.type.startsWith("video/") || file.size > 50 * 1024 * 1024)) {
+      toast.error("Choose video clips under 50 MB each.");
+      return;
+    }
     setUploading(true);
     try {
       const urls: string[] = [];
@@ -410,7 +414,7 @@ function EditModal({
             {state.videos.length === 0 && <p className="text-xs text-muted-foreground">No videos yet.</p>}
             {state.videos.map((src, i) => (
               <div key={i} className="relative flex h-20 w-32 items-center justify-center border border-border bg-secondary/40">
-                <video src={src} className="h-full w-full object-cover" muted />
+                <video src={src} className="h-full w-full object-cover" controls muted preload="metadata" playsInline />
                 <Film className="absolute inset-0 m-auto h-5 w-5 text-foreground/40" />
                 <button
                   type="button"

@@ -22,8 +22,13 @@ export const submitRetailerApplication = createServerFn({ method: "POST" })
   .inputValidator((data) => schema.parse(data))
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    let userId: string | null = null;
+    if (data.user_id) {
+      const { data: profile } = await supabaseAdmin.from("profiles").select("id,email").eq("id", data.user_id).maybeSingle();
+      if (profile?.email.toLowerCase() === data.email.trim().toLowerCase()) userId = profile.id;
+    }
     const { error } = await supabaseAdmin.from("retailer_applications").insert({
-      user_id: data.user_id ?? null,
+      user_id: userId,
       business_name: data.business_name.trim(),
       owner_name: data.owner_name.trim(),
       phone: data.phone.trim(),
@@ -33,5 +38,13 @@ export const submitRetailerApplication = createServerFn({ method: "POST" })
       social_links: data.social_links ?? null,
     });
     if (error) throw new Error(error.message);
+    if (userId) {
+      const { error: profileError } = await supabaseAdmin.from("profiles").update({
+        business_name: data.business_name.trim(), phone: data.phone.trim(),
+        business_address: data.business_address.trim(), monthly_volume: data.monthly_volume ?? null,
+        retailer_status: "pending",
+      }).eq("id", userId);
+      if (profileError) throw profileError;
+    }
     return { ok: true };
   });
