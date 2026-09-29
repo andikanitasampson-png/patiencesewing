@@ -9,12 +9,8 @@ import { lovable } from "@/integrations/lovable";
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-       { title: "Sign in — Patience Sewing Ltd" },
-       { name: "description", content: "Sign in to your Patience Sewing Ltd account." },
-       { property: "og:title", content: "Sign in — Patience Sewing Ltd" },
-       { property: "og:description", content: "Access your Patience Sewing Ltd account and wholesale prices." },
-       { property: "og:type", content: "website" },
-       { name: "twitter:card", content: "summary" },
+      { title: "Sign in — Patience Sewing" },
+      { name: "description", content: "Sign in to your Patience Sewing retailer account." },
     ],
   }),
   component: AuthPage,
@@ -92,7 +88,7 @@ function AuthPage() {
       <div className="mx-auto grid max-w-6xl gap-16 px-6 py-20 lg:grid-cols-2 lg:px-12 lg:py-28">
         <div className="hidden flex-col justify-between lg:flex">
           <div>
-             <p className="eyebrow">Patience Sewing Ltd</p>
+            <p className="eyebrow">Patience Sewing</p>
             <h1 className="mt-6 text-5xl">
               Sign in to your <span className="italic text-primary">atelier</span>.
             </h1>
@@ -101,7 +97,7 @@ function AuthPage() {
             </p>
           </div>
           <p className="text-xs text-muted-foreground">
-             New to Patience Sewing Ltd?{" "}
+            New to Patience Sewing?{" "}
             <Link to="/apply" className="text-primary hover:text-accent">
               Apply for wholesale access →
             </Link>

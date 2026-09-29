@@ -9,20 +9,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { createGuestOrder } from "@/lib/guest-checkout.functions";
 
 export const Route = createFileRoute("/checkout")({
-  head: () => ({ meta: [
-    { title: "Checkout — Patience Sewing Ltd" },
-    { name: "description", content: "Enter your contact and delivery details for Patience Sewing Ltd." },
-    { property: "og:title", content: "Checkout — Patience Sewing Ltd" },
-    { property: "og:description", content: "Enter your contact and delivery details for Patience Sewing Ltd." },
-    { property: "og:type", content: "website" },
-    { name: "twitter:card", content: "summary" },
-  ] }),
   component: CheckoutPage,
 });
 
 function CheckoutPage() {
   const { items, subtotal, clear } = useCart();
-  const { user, profile, loading, isApprovedRetailer } = useAuth();
+  const { user, profile, loading } = useAuth();
   const navigate = useNavigate();
 
   const isGuest = !user;
@@ -51,10 +43,6 @@ function CheckoutPage() {
   }, [loading, items.length, navigate]);
 
   const handlePay = async () => {
-    if (items.some((item) => item.kind === "wholesale") && !isApprovedRetailer) {
-      toast.error("Wholesale checkout requires an approved retailer account.");
-      return;
-    }
     if (!name || !phone || !address || !email) {
       toast.error("Please complete contact and shipping information.");
       return;
@@ -63,7 +51,7 @@ function CheckoutPage() {
     try {
       const ref = `PS_STUB_${Date.now()}_${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
 
-       if (user && isApprovedRetailer) {
+      if (user) {
         const shipping = `${name}${business ? ` · ${business}` : ""}\n${phone}\n${email}\n${address}`;
         const { data: order, error: orderErr } = await supabase
           .from("orders")
@@ -101,7 +89,7 @@ function CheckoutPage() {
         toast.success("Payment confirmed");
         navigate({ to: "/orders/$id", params: { id: order.id } });
       } else {
-         const result = await createGuestOrder({
+        await createGuestOrder({
           data: {
             name,
             business: business || null,
@@ -120,12 +108,11 @@ function CheckoutPage() {
             })),
           },
         });
-         sessionStorage.setItem(`guest-order-email:${result.orderId}`, email);
         clear();
         toast.success("Order placed", {
           description: `Reference ${ref}. We'll email ${email} with shipping updates.`,
         });
-         navigate({ to: "/orders/$id", params: { id: result.orderId } });
+        navigate({ to: "/" });
       }
     } catch (e) {
       console.error(e);

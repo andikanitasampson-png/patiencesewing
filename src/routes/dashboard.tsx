@@ -8,14 +8,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { formatNgn } from "@/lib/products";
 
 export const Route = createFileRoute("/dashboard")({
-  head: () => ({ meta: [
-    { title: "Your account — Patience Sewing Ltd" },
-    { name: "description", content: "View your orders and retailer application at Patience Sewing Ltd." },
-    { property: "og:title", content: "Your account — Patience Sewing Ltd" },
-    { property: "og:description", content: "View your orders and retailer application at Patience Sewing Ltd." },
-    { property: "og:type", content: "website" },
-    { name: "twitter:card", content: "summary" },
-  ] }),
   component: DashboardPage,
 });
 

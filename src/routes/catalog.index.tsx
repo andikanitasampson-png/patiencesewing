@@ -10,15 +10,13 @@ import { useAuth } from "@/lib/auth-context";
 export const Route = createFileRoute("/catalog/")({
   head: () => ({
     meta: [
-       { title: "Collection — Patience Sewing Ltd" },
+      { title: "Collection — Patience Sewing" },
       {
         name: "description",
-         content: "Browse the Patience Sewing Ltd collection. Ankara dresses, lace blouses, Adire skirts.",
+        content: "Browse the Patience Sewing wholesale collection. Ankara dresses, lace blouses, Adire skirts.",
       },
-       { property: "og:title", content: "Collection — Patience Sewing Ltd" },
-       { property: "og:description", content: "Shop retail African fashion and discover wholesale access for approved retailers." },
-       { property: "og:type", content: "website" },
-       { name: "twitter:card", content: "summary_large_image" },
+      { property: "og:title", content: "Collection — Patience Sewing" },
+      { property: "og:description", content: "Wholesale-only African fashion. Minimum 12 pieces." },
     ],
   }),
   component: CatalogPage,

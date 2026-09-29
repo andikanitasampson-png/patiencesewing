@@ -1,5 +1,5 @@
-import { Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { Link } from "@tanstack/react-router";
+import { useState } from "react";
 import { Menu, X, ShoppingBag } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { useCart } from "@/lib/cart-context";
@@ -14,35 +14,13 @@ export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const { user, profile, signOut, isApprovedRetailer, isAdmin } = useAuth();
   const { count } = useCart();
-  const navigate = useNavigate();
-  const holdTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const held = useRef(false);
-  const openAdmin = () => navigate({ to: "/admin" });
-  useEffect(() => {
-    const onKey = (event: KeyboardEvent) => {
-      if (event.altKey && event.shiftKey && event.key.toLowerCase() === "a") {
-        event.preventDefault();
-        void openAdmin();
-      }
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [navigate]);
-  const cancelHold = () => {
-    if (holdTimer.current) clearTimeout(holdTimer.current);
-    holdTimer.current = null;
-  };
 
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6 lg:h-20 lg:px-12">
-        <Link to="/" className="flex flex-col leading-none" onPointerDown={(event) => {
-          if (event.pointerType === "touch") holdTimer.current = setTimeout(() => { held.current = true; void openAdmin(); }, 650);
-        }} onPointerUp={cancelHold} onPointerLeave={cancelHold} onPointerCancel={cancelHold} onClick={(event) => {
-          if (held.current) { event.preventDefault(); held.current = false; }
-        }}>
-          <span className="font-display text-2xl tracking-tight">Patience Sewing Ltd</span>
-          <span className="eyebrow mt-0.5 text-[0.6rem]">Atelier · Bayelsa</span>
+        <Link to="/" className="flex flex-col leading-none">
+          <span className="font-display text-2xl tracking-tight">Patience Sewing</span>
+          <span className="eyebrow mt-0.5 text-[0.6rem]">Atelier · Lagos</span>
         </Link>
 
         <nav className="hidden items-center gap-10 md:flex">
@@ -67,6 +45,14 @@ export function SiteHeader() {
               >
                 {isApprovedRetailer ? "Account" : "Dashboard"}
               </Link>
+              {isAdmin && (
+                <Link
+                  to="/admin"
+                  className="text-xs font-medium uppercase tracking-[0.18em] text-accent-foreground hover:text-primary [&.active]:text-primary"
+                >
+                  Admin
+                </Link>
+              )}
               <span className="text-xs text-muted-foreground">
                 {profile?.full_name || user.email}
               </span>

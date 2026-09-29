@@ -22,10 +22,8 @@ export const submitRetailerApplication = createServerFn({ method: "POST" })
   .inputValidator((data) => schema.parse(data))
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    // A public applicant cannot assert ownership of a user profile.
-    // Admin review may associate an account after an explicit review.
     const { error } = await supabaseAdmin.from("retailer_applications").insert({
-      user_id: null,
+      user_id: data.user_id ?? null,
       business_name: data.business_name.trim(),
       owner_name: data.owner_name.trim(),
       phone: data.phone.trim(),

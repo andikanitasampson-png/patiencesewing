@@ -1,7 +1,7 @@
 import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { Lock, Play } from "lucide-react";
+import { Lock } from "lucide-react";
 import { toast } from "sonner";
 import { SiteLayout } from "@/components/site-layout";
 import { fetchProduct, formatNgn, resolveImage, tierForQty, discountPct } from "@/lib/products";
@@ -9,14 +9,6 @@ import { useAuth } from "@/lib/auth-context";
 import { useCart } from "@/lib/cart-context";
 
 export const Route = createFileRoute("/catalog/$id")({
-  head: () => ({ meta: [
-    { title: "Product details — Patience Sewing Ltd" },
-    { name: "description", content: "Shop Patience Sewing Ltd clothing and view retail prices and product videos." },
-    { property: "og:title", content: "Product details — Patience Sewing Ltd" },
-    { property: "og:description", content: "Shop Patience Sewing Ltd clothing and view retail prices and product videos." },
-    { property: "og:type", content: "product" },
-    { name: "twitter:card", content: "summary_large_image" },
-  ] }),
   component: ProductPage,
 });
 
@@ -35,7 +27,6 @@ function ProductPage() {
   const [size, setSize] = useState<string | null>(null);
   const [qty, setQty] = useState<number>(0);
   const [mode, setMode] = useState<"retail" | "wholesale">("retail");
-  const [mediaIndex, setMediaIndex] = useState(0);
 
   if (isLoading) {
     return (
@@ -63,8 +54,6 @@ function ProductPage() {
 
   const canAdd =
     !!color && !!size && qty >= minQty && (isWholesale ? !!activeTier : retailPrice > 0);
-  const media = [...product.images.map((src) => ({ src, kind: "image" as const })), ...(product.videos ?? []).map((src) => ({ src, kind: "video" as const }))];
-  const selectedMedia = media[mediaIndex] ?? media[0];
 
   return (
     <SiteLayout>
@@ -76,21 +65,12 @@ function ProductPage() {
         <div className="mt-8 grid gap-12 lg:grid-cols-2">
           <div>
             <div className="aspect-[4/5] overflow-hidden border border-border bg-secondary">
-              {selectedMedia?.kind === "video" ? (
-                <video key={selectedMedia.src} src={selectedMedia.src} controls playsInline preload="metadata" className="h-full w-full object-contain" aria-label={`${product.name} video`} />
-              ) : (
-                <img src={resolveImage(selectedMedia?.src)} alt={product.name} className="h-full w-full object-cover" />
-              )}
+              <img
+                src={resolveImage(product.images[0])}
+                alt={product.name}
+                className="h-full w-full object-cover"
+              />
             </div>
-            {media.length > 1 && (
-              <div className="mt-3 flex gap-2 overflow-x-auto pb-2" aria-label="Product photos and videos">
-                {media.map((item, index) => (
-                  <button key={`${item.src}-${index}`} type="button" onClick={() => setMediaIndex(index)} aria-label={`View ${item.kind} ${index + 1}`} aria-pressed={mediaIndex === index} className={`relative h-20 w-16 shrink-0 overflow-hidden border-2 bg-secondary ${mediaIndex === index ? "border-primary" : "border-border"}`}>
-                    {item.kind === "image" ? <img src={resolveImage(item.src)} alt="" className="h-full w-full object-cover" /> : <><video src={item.src} preload="metadata" muted className="h-full w-full object-cover" /><Play className="absolute inset-0 m-auto h-5 w-5 text-primary-foreground drop-shadow-md" /></>}
-                  </button>
-                ))}
-              </div>
-            )}
           </div>
 
           <div className="lg:py-6">

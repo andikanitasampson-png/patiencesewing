@@ -8,14 +8,6 @@ import { useAuth } from "@/lib/auth-context";
 import { useEffect } from "react";
 
 export const Route = createFileRoute("/cart")({
-  head: () => ({ meta: [
-    { title: "Shopping cart — Patience Sewing Ltd" },
-    { name: "description", content: "Review your Patience Sewing Ltd clothing selection." },
-    { property: "og:title", content: "Shopping cart — Patience Sewing Ltd" },
-    { property: "og:description", content: "Review your Patience Sewing Ltd clothing selection." },
-    { property: "og:type", content: "website" },
-    { name: "twitter:card", content: "summary" },
-  ] }),
   component: CartPage,
 });
 

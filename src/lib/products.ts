@@ -67,25 +67,6 @@ export function resolveImage(src: string | undefined): string {
   return src;
 }
 
-async function refreshMediaUrl(url: string): Promise<string> {
-  // Older uploads store expiring signed URLs; renew them each time a product is loaded.
-  const marker = "/object/sign/product-media/";
-  const position = url.indexOf(marker);
-  if (position === -1) return url;
-  const path = url.slice(position + marker.length).split("?")[0];
-  if (!path) return url;
-  const { data, error } = await supabase.storage.from("product-media").createSignedUrl(decodeURIComponent(path), 60 * 60 * 24);
-  return error || !data ? url : data.signedUrl;
-}
-
-async function refreshProductMedia<T extends Product>(product: T): Promise<T> {
-  const [images, videos] = await Promise.all([
-    Promise.all(product.images.map(refreshMediaUrl)),
-    Promise.all((product.videos ?? []).map(refreshMediaUrl)),
-  ]);
-  return { ...product, images, videos };
-}
-
 export async function fetchProducts(): Promise<Product[]> {
   const { data, error } = await supabase
     .from("products")
@@ -93,7 +74,7 @@ export async function fetchProducts(): Promise<Product[]> {
     .eq("is_active", true)
     .order("created_at", { ascending: false });
   if (error) throw error;
-  return Promise.all(((data ?? []) as Product[]).map(refreshProductMedia));
+  return (data ?? []) as Product[];
 }
 
 export async function fetchProduct(id: string): Promise<ProductWithTiers | null> {
@@ -111,5 +92,5 @@ export async function fetchProduct(id: string): Promise<ProductWithTiers | null>
     .eq("product_id", id)
     .order("min_qty");
 
-  return refreshProductMedia({ ...(product as Product), pricing_tiers: (tiers ?? []) as PricingTier[] });
+  return { ...(product as Product), pricing_tiers: (tiers ?? []) as PricingTier[] };
 }

@@ -7,16 +7,15 @@ import heroImg from "@/assets/hero.jpg";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-       { title: "Patience Sewing Ltd — Premium African Fashion, Retail & Wholesale" },
+      { title: "Patience Sewing — Premium African Fashion, Retail & Wholesale" },
       {
         name: "description",
         content:
           "Shop premium African fashion direct. Buy single pieces at retail, or unlock wholesale pricing from 12 pieces.",
       },
-       { property: "og:title", content: "Patience Sewing Ltd — Premium African Fashion" },
-       { property: "og:description", content: "Retail and wholesale. Direct from our Bayelsa atelier." },
-       { property: "og:type", content: "website" },
-       { name: "twitter:card", content: "summary_large_image" },
+      { property: "og:title", content: "Patience Sewing — Premium African Fashion" },
+      { property: "og:description", content: "Retail and wholesale. Direct from our Lagos atelier." },
+      { property: "og:image", content: heroImg },
     ],
   }),
   component: HomePage,
@@ -34,11 +33,12 @@ function HomePage() {
           <div className="order-2 flex flex-col justify-center px-6 py-20 lg:order-1 lg:col-span-5 lg:px-16 lg:py-32">
             <p className="eyebrow">Retail · Wholesale · Est. 2018</p>
             <h1 className="mt-6">
-               Patience Sewing Ltd
+              Premium African Fashion,{" "}
+              <span className="italic text-primary">direct.</span>
             </h1>
             <p className="mt-8 max-w-md text-base leading-relaxed text-foreground/75">
               Shop single pieces at retail, or unlock tiered wholesale pricing from 12 pieces.
-               Designed and produced in our Bayelsa atelier.
+              Designed and produced in our Lagos atelier.
             </p>
             <div className="mt-10 flex flex-wrap gap-3">
               <Link
@@ -72,10 +72,10 @@ function HomePage() {
           </div>
 
           <div className="order-1 lg:order-2 lg:col-span-7">
-            <div className="relative aspect-[4/5] overflow-hidden bg-secondary">
+            <div className="relative flex h-[70vh] min-h-[480px] items-center justify-center overflow-hidden bg-secondary lg:h-[calc(100vh-5rem)]">
               <img
                 src={heroImg}
-                alt="Patience Sewing Ltd design in soft blue and white"
+                alt="Editorial shot of an Ankara wrap dress in burnt orange"
                 className="h-full w-full object-contain"
               />
             </div>
@@ -145,7 +145,7 @@ function HomePage() {
       <section className="border-y border-border bg-secondary/50">
         <div className="mx-auto max-w-7xl px-6 py-24 lg:px-12">
           <div className="mx-auto max-w-2xl text-center">
-             <p className="eyebrow">Why Patience Sewing Ltd</p>
+            <p className="eyebrow">Why Patience Sewing</p>
             <h2 className="mt-4">A house built on three principles.</h2>
           </div>
 
@@ -159,12 +159,12 @@ function HomePage() {
               {
                 n: "02",
                 title: "Fast Production",
-                 body: "14-day lead times on standard orders. Our atelier in Bayelsa runs to schedule, every time.",
+                body: "14-day lead times on standard orders. Our atelier in Lagos runs to schedule, every time.",
               },
               {
                 n: "03",
                 title: "Trusted by 500+",
-                 body: "Boutiques across Bayelsa, Abuja, Accra, London, and Atlanta stock our collections season after season.",
+                body: "Boutiques across Lagos, Abuja, Accra, London, and Atlanta stock our collections season after season.",
               },
             ].map((v) => (
               <div key={v.n} className="border-t border-foreground/20 pt-8">

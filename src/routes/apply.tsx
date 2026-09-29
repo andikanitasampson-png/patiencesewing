@@ -3,18 +3,17 @@ import { useEffect, useState } from "react";
 import { z } from "zod";
 import { toast } from "sonner";
 import { SiteLayout } from "@/components/site-layout";
+import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
 import { submitRetailerApplication } from "@/lib/applications.functions";
 
 export const Route = createFileRoute("/apply")({
   head: () => ({
     meta: [
-       { title: "Become a Retailer — Patience Sewing Ltd" },
+      { title: "Become a Retailer — Patience Sewing" },
       { name: "description", content: "Apply for wholesale access. Approval within 48 hours." },
-       { property: "og:title", content: "Become a Retailer — Patience Sewing Ltd" },
+      { property: "og:title", content: "Become a Retailer — Patience Sewing" },
       { property: "og:description", content: "Apply for wholesale access. Approval within 48 hours." },
-       { property: "og:type", content: "website" },
-       { name: "twitter:card", content: "summary" },
     ],
   }),
   component: ApplyPage,
@@ -99,6 +98,20 @@ function ApplyPage() {
     }
     setBusy(false);
 
+    if (user) {
+      await supabase
+        .from("profiles")
+        .update({
+          business_name: form.business_name.trim(),
+          phone: form.phone.trim(),
+          business_address: form.business_address.trim(),
+          monthly_volume: form.monthly_volume,
+          retailer_status: "pending",
+          role: "retailer",
+        })
+        .eq("id", user.id);
+    }
+
     setSubmitted(true);
     toast.success("Application received");
   };
@@ -123,7 +136,7 @@ function ApplyPage() {
       <div className="mx-auto grid max-w-7xl gap-16 px-6 py-16 lg:grid-cols-[1fr_1.4fr] lg:px-12 lg:py-24">
         <div>
           <p className="eyebrow">Wholesale Access</p>
-           <h1 className="mt-4">Become a Patience Sewing Ltd retailer.</h1>
+          <h1 className="mt-4">Become a Patience Sewing retailer.</h1>
           <p className="mt-6 text-base leading-relaxed text-foreground/75">
             Approved retailers receive tiered wholesale pricing, priority production,
             and seasonal lookbooks. Each application is reviewed personally within 48 hours.
