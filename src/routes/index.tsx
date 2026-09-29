@@ -72,10 +72,10 @@ function HomePage() {
           </div>
 
           <div className="order-1 lg:order-2 lg:col-span-7">
-            <div className="relative flex h-[70vh] min-h-[480px] items-center justify-center overflow-hidden bg-secondary lg:h-[calc(100vh-5rem)]">
+            <div className="relative aspect-[4/5] overflow-hidden bg-secondary">
               <img
                 src={heroImg}
-                alt="Editorial shot of an Ankara wrap dress in burnt orange"
+                alt="Patience Sewing Ltd design in soft blue and white"
                 className="h-full w-full object-contain"
               />
             </div>

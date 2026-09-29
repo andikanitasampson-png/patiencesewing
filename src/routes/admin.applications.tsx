@@ -7,6 +7,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { reviewRetailerApplication } from "@/lib/admin.functions";
 
 export const Route = createFileRoute("/admin/applications")({
+  head: () => ({ meta: [
+    { title: "Retailer applications — Patience Sewing Ltd" },
+    { name: "description", content: "Review retailer applications for Patience Sewing Ltd." },
+    { property: "og:title", content: "Retailer applications — Patience Sewing Ltd" },
+    { property: "og:description", content: "Review retailer applications for Patience Sewing Ltd." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: AdminApplications,
 });
 
@@ -21,6 +29,7 @@ type App = {
   status: string;
   admin_notes: string | null;
   submitted_at: string;
+  reviewed_at: string | null;
   social_links: Record<string, string> | null;
 };
 
@@ -107,6 +116,7 @@ function AppCard({
           <p className="mt-1 text-xs text-muted-foreground">
             Submitted {new Date(app.submitted_at).toLocaleDateString("en-NG", { year: "numeric", month: "short", day: "numeric" })}
           </p>
+          {app.reviewed_at && <p className="mt-1 text-xs text-muted-foreground">Reviewed {new Date(app.reviewed_at).toLocaleDateString("en-NG", { year: "numeric", month: "short", day: "numeric" })}</p>}
         </div>
         <StatusPill status={app.status} />
       </header>

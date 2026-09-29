@@ -9,12 +9,20 @@ import { supabase } from "@/integrations/supabase/client";
 import { createGuestOrder } from "@/lib/guest-checkout.functions";
 
 export const Route = createFileRoute("/checkout")({
+  head: () => ({ meta: [
+    { title: "Checkout — Patience Sewing Ltd" },
+    { name: "description", content: "Enter your contact and delivery details for Patience Sewing Ltd." },
+    { property: "og:title", content: "Checkout — Patience Sewing Ltd" },
+    { property: "og:description", content: "Enter your contact and delivery details for Patience Sewing Ltd." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: CheckoutPage,
 });
 
 function CheckoutPage() {
   const { items, subtotal, clear } = useCart();
-   const { user, profile, loading, isApprovedRetailer } = useAuth();
+  const { user, profile, loading, isApprovedRetailer } = useAuth();
   const navigate = useNavigate();
 
   const isGuest = !user;

@@ -7,6 +7,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { formatNgn, resolveImage, startingPrice, type Product, type PricingTier } from "@/lib/products";
 
 export const Route = createFileRoute("/admin/products")({
+  head: () => ({ meta: [
+    { title: "Manage products — Patience Sewing Ltd" },
+    { name: "description", content: "Manage clothing, product photos, and videos for Patience Sewing Ltd." },
+    { property: "og:title", content: "Manage products — Patience Sewing Ltd" },
+    { property: "og:description", content: "Manage clothing, product photos, and videos for Patience Sewing Ltd." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: AdminProducts,
 });
 

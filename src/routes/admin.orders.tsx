@@ -6,6 +6,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { formatNgn } from "@/lib/products";
 
 export const Route = createFileRoute("/admin/orders")({
+  head: () => ({ meta: [
+    { title: "Manage orders — Patience Sewing Ltd" },
+    { name: "description", content: "Review customer orders at Patience Sewing Ltd." },
+    { property: "og:title", content: "Manage orders — Patience Sewing Ltd" },
+    { property: "og:description", content: "Review customer orders at Patience Sewing Ltd." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: AdminOrders,
 });
 
