@@ -7,14 +7,14 @@ import heroImg from "@/assets/hero.jpg";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Patience Sewing — Premium African Fashion, Retail & Wholesale" },
+      { title: "Patience Sewing Ltd — Premium African Fashion, Retail & Wholesale" },
       {
         name: "description",
         content:
           "Shop premium African fashion direct. Buy single pieces at retail, or unlock wholesale pricing from 12 pieces.",
       },
-      { property: "og:title", content: "Patience Sewing — Premium African Fashion" },
-      { property: "og:description", content: "Retail and wholesale. Direct from our Lagos atelier." },
+      { property: "og:title", content: "Patience Sewing Ltd — Premium African Fashion" },
+      { property: "og:description", content: "Retail and wholesale. Direct from our Bayelsa atelier." },
       { property: "og:image", content: heroImg },
     ],
   }),
@@ -38,7 +38,7 @@ function HomePage() {
             </h1>
             <p className="mt-8 max-w-md text-base leading-relaxed text-foreground/75">
               Shop single pieces at retail, or unlock tiered wholesale pricing from 12 pieces.
-              Designed and produced in our Lagos atelier.
+              Designed and produced in our Bayelsa atelier.
             </p>
             <div className="mt-10 flex flex-wrap gap-3">
               <Link
@@ -145,7 +145,7 @@ function HomePage() {
       <section className="border-y border-border bg-secondary/50">
         <div className="mx-auto max-w-7xl px-6 py-24 lg:px-12">
           <div className="mx-auto max-w-2xl text-center">
-            <p className="eyebrow">Why Patience Sewing</p>
+            <p className="eyebrow">Why Patience Sewing Ltd</p>
             <h2 className="mt-4">A house built on three principles.</h2>
           </div>
 
@@ -159,12 +159,12 @@ function HomePage() {
               {
                 n: "02",
                 title: "Fast Production",
-                body: "14-day lead times on standard orders. Our atelier in Lagos runs to schedule, every time.",
+                body: "14-day lead times on standard orders. Our atelier in Bayelsa runs to schedule, every time.",
               },
               {
                 n: "03",
                 title: "Trusted by 500+",
-                body: "Boutiques across Lagos, Abuja, Accra, London, and Atlanta stock our collections season after season.",
+                body: "Boutiques across Bayelsa, Abuja, Accra, London, and Atlanta stock our collections season after season.",
               },
             ].map((v) => (
               <div key={v.n} className="border-t border-foreground/20 pt-8">
