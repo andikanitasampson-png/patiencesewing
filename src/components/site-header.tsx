@@ -19,8 +19,8 @@ export function SiteHeader() {
     <header className="sticky top-0 z-40 border-b border-border bg-background">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6 lg:h-20 lg:px-12">
         <Link to="/" className="flex flex-col leading-none">
-          <span className="font-display text-2xl tracking-tight">Patience Sewing Ltd</span>
-          <span className="eyebrow mt-0.5 text-[0.6rem]">Atelier · Bayelsa</span>
+          <span className="font-display text-2xl tracking-tight">Patience Sewing</span>
+          <span className="eyebrow mt-0.5 text-[0.6rem]">Atelier · Lagos</span>
         </Link>
 
         <nav className="hidden items-center gap-10 md:flex">
