@@ -17,7 +17,7 @@ export function SiteHeader() {
   const navigate = useNavigate();
   const holdTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const held = useRef(false);
-  const openAdmin = () => navigate({ to: isAdmin ? "/admin" : "/auth" });
+  const openAdmin = () => navigate({ to: "/admin" });
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
       if (event.altKey && event.shiftKey && event.key.toLowerCase() === "a") {
@@ -27,7 +27,7 @@ export function SiteHeader() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [isAdmin, navigate]);
+  }, [navigate]);
   const cancelHold = () => {
     if (holdTimer.current) clearTimeout(holdTimer.current);
     holdTimer.current = null;
@@ -67,14 +67,6 @@ export function SiteHeader() {
               >
                 {isApprovedRetailer ? "Account" : "Dashboard"}
               </Link>
-              {isAdmin && (
-                <Link
-                  to="/admin"
-                  className="text-xs font-medium uppercase tracking-[0.18em] text-accent-foreground hover:text-primary [&.active]:text-primary"
-                >
-                  Admin
-                </Link>
-              )}
               <span className="text-xs text-muted-foreground">
                 {profile?.full_name || user.email}
               </span>

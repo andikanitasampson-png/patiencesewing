@@ -9,6 +9,14 @@ import { useAuth } from "@/lib/auth-context";
 import { useCart } from "@/lib/cart-context";
 
 export const Route = createFileRoute("/catalog/$id")({
+  head: () => ({ meta: [
+    { title: "Product details — Patience Sewing Ltd" },
+    { name: "description", content: "Shop Patience Sewing Ltd clothing and view retail prices and product videos." },
+    { property: "og:title", content: "Product details — Patience Sewing Ltd" },
+    { property: "og:description", content: "Shop Patience Sewing Ltd clothing and view retail prices and product videos." },
+    { property: "og:type", content: "product" },
+    { name: "twitter:card", content: "summary_large_image" },
+  ] }),
   component: ProductPage,
 });
 
