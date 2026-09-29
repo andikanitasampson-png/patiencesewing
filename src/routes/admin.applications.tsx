@@ -7,6 +7,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { reviewRetailerApplication } from "@/lib/admin.functions";
 
 export const Route = createFileRoute("/admin/applications")({
+  head: () => ({ meta: [
+    { title: "Retailer applications — Patience Sewing Ltd" },
+    { name: "description", content: "Review retailer applications for Patience Sewing Ltd." },
+    { property: "og:title", content: "Retailer applications — Patience Sewing Ltd" },
+    { property: "og:description", content: "Review retailer applications for Patience Sewing Ltd." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: AdminApplications,
 });
 

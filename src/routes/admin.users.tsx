@@ -6,6 +6,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { setUserRole } from "@/lib/admin.functions";
 
 export const Route = createFileRoute("/admin/users")({
+  head: () => ({ meta: [
+    { title: "Manage users — Patience Sewing Ltd" },
+    { name: "description", content: "Manage Patience Sewing Ltd admin and retailer access." },
+    { property: "og:title", content: "Manage users — Patience Sewing Ltd" },
+    { property: "og:description", content: "Manage Patience Sewing Ltd admin and retailer access." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: AdminUsers,
 });
 
