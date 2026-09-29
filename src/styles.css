@@ -5,7 +5,7 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * Patience Sewing — Luxury Artisanal African Fashion
+ * Patience Sewing Ltd — Luxury Artisanal African Fashion
  *
  * Cognac × Champagne × Cream × Espresso
  * Cormorant Garamond (display) + Inter (body)
@@ -54,12 +54,12 @@
 :root {
   --radius: 2px;
 
-  /* Brand palette — Sky blue × Powder × White × Ink navy */
-  --cream: oklch(0.992 0.004 240);         /* near-white */
-  --bone: oklch(0.965 0.018 235);          /* powder blue tint */
-  --cognac: oklch(0.62 0.13 245);          /* sky blue primary */
-  --champagne: oklch(0.86 0.06 230);       /* light powder blue accent */
-  --espresso: oklch(0.24 0.05 250);        /* deep ink navy */
+  /* Brand palette — Royal blue × Gold × White */
+  --cream: oklch(0.993 0.003 260);         /* near-white */
+  --bone: oklch(0.962 0.016 260);          /* soft blue-tinted paper */
+  --cognac: oklch(0.42 0.20 264);          /* royal blue primary */
+  --champagne: oklch(0.80 0.13 85);        /* gold accent */
+  --espresso: oklch(0.21 0.07 265);        /* deep navy ink */
 
   /* Mapped semantic tokens */
   --background: var(--cream);
