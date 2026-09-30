@@ -7,6 +7,73 @@ import { SiteLayout } from "@/components/site-layout";
 import { fetchProduct, formatNgn, resolveImage, tierForQty, discountPct } from "@/lib/products";
 import { useAuth } from "@/lib/auth-context";
 import { useCart } from "@/lib/cart-context";
+import { submitQuotation } from "@/lib/quotations.functions";
+
+function QuoteForm({
+  productId,
+  productName,
+  defaultQty,
+  defaultEmail,
+  userId,
+  onDone,
+}: {
+  productId: string;
+  productName: string;
+  defaultQty?: number;
+  defaultEmail: string;
+  userId: string | null;
+  onDone: () => void;
+}) {
+  const [f, setF] = useState({
+    name: "",
+    email: defaultEmail,
+    phone: "",
+    quantity: defaultQty ? String(defaultQty) : "",
+    message: "",
+  });
+  const [busy, setBusy] = useState(false);
+  const cls =
+    "mt-1 w-full rounded-sm border border-border bg-background px-3 py-2.5 text-sm focus:border-primary focus:outline-none";
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setBusy(true);
+    try {
+      await submitQuotation({
+        data: {
+          productId,
+          productName,
+          name: f.name,
+          email: f.email,
+          phone: f.phone || null,
+          quantity: f.quantity ? parseInt(f.quantity) : null,
+          message: f.message,
+          userId,
+        },
+      });
+      toast.success("Quotation request sent", { description: "Our team will reach out within 24 hours." });
+      onDone();
+    } catch {
+      toast.error("Please check your details and try again.");
+    } finally {
+      setBusy(false);
+    }
+  };
+  return (
+    <form onSubmit={submit} className="mt-6 space-y-3 rounded-sm border border-border bg-secondary/40 p-5">
+      <p className="eyebrow">Request a quotation</p>
+      <div className="grid gap-3 sm:grid-cols-2">
+        <label className="text-xs">Name *<input required value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} className={cls} /></label>
+        <label className="text-xs">Email *<input required type="email" value={f.email} onChange={(e) => setF({ ...f, email: e.target.value })} className={cls} /></label>
+        <label className="text-xs">Phone<input value={f.phone} onChange={(e) => setF({ ...f, phone: e.target.value })} className={cls} /></label>
+        <label className="text-xs">Quantity<input type="number" min={1} value={f.quantity} onChange={(e) => setF({ ...f, quantity: e.target.value })} className={cls} /></label>
+      </div>
+      <label className="block text-xs">Message *<textarea required minLength={5} rows={3} value={f.message} onChange={(e) => setF({ ...f, message: e.target.value })} className={cls} placeholder="Tell us what you need — sizes, colors, delivery date…" /></label>
+      <button disabled={busy} className="rounded-sm bg-primary px-6 py-3 text-xs font-medium uppercase tracking-[0.2em] text-primary-foreground hover:bg-accent disabled:opacity-50">
+        {busy ? "Sending…" : "Send request"}
+      </button>
+    </form>
+  );
+}
 
 export const Route = createFileRoute("/catalog/$id")({
   component: ProductPage,
@@ -25,8 +92,9 @@ function ProductPage() {
 
   const [color, setColor] = useState<string | null>(null);
   const [size, setSize] = useState<string | null>(null);
-  const [qty, setQty] = useState<number>(0);
+  const [qty, setQty] = useState<number>(1);
   const [mode, setMode] = useState<"retail" | "wholesale">("retail");
+  const [quoteOpen, setQuoteOpen] = useState(false);
 
   if (isLoading) {
     return (
@@ -52,8 +120,13 @@ function ProductPage() {
   const belowMoq = isWholesale && qty > 0 && qty < product.moq;
   const subtotal = unitPrice * qty;
 
+  const needsColor = product.colors.length > 0;
+  const needsSize = product.sizes.length > 0;
   const canAdd =
-    !!color && !!size && qty >= minQty && (isWholesale ? !!activeTier : retailPrice > 0);
+    (!needsColor || !!color) &&
+    (!needsSize || !!size) &&
+    qty >= minQty &&
+    (isWholesale ? !!activeTier : retailPrice > 0);
 
   return (
     <SiteLayout>
@@ -231,13 +304,13 @@ function ProductPage() {
               <button
                 disabled={!canAdd}
                 onClick={() => {
-                  if (!color || !size) return;
+                  if (!canAdd) return;
                   addItem({
                     productId: product.id,
                     name: product.name,
                     image: product.images[0] ?? "",
-                    color,
-                    size,
+                    color: color ?? "Default",
+                    size: size ?? "One size",
                     qty,
                     unitPriceNgn: unitPrice,
                     moq: product.moq,
@@ -252,16 +325,29 @@ function ProductPage() {
                 Add to Cart
               </button>
               <button
-                onClick={() =>
-                  toast.success("Quotation request noted", {
-                    description: "Our team will reach out within 24 hours.",
-                  })
-                }
+                onClick={() => setQuoteOpen((v) => !v)}
                 className="rounded-sm border border-foreground px-7 py-4 text-xs font-medium uppercase tracking-[0.22em] text-foreground hover:bg-foreground hover:text-background"
               >
                 Request Quotation
               </button>
             </div>
+            {!canAdd && (
+              <p className="mt-3 text-xs text-muted-foreground">
+                {needsColor && !color ? "Choose a color. " : ""}
+                {needsSize && !size ? "Choose a size. " : ""}
+                {qty < minQty ? `Enter a quantity of at least ${minQty}.` : ""}
+              </p>
+            )}
+            {quoteOpen && (
+              <QuoteForm
+                productId={product.id}
+                productName={product.name}
+                defaultQty={qty || undefined}
+                defaultEmail={user?.email ?? ""}
+                userId={user?.id ?? null}
+                onDone={() => setQuoteOpen(false)}
+              />
+            )}
           </div>
         </div>
       </div>
