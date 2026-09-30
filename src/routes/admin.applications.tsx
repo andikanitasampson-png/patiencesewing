@@ -4,7 +4,7 @@ import { useState } from "react";
 import { CheckCircle2, Clock, XCircle } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { reviewRetailerApplication } from "@/lib/admin.functions";
+import { deleteRetailerApplication, reviewRetailerApplication } from "@/lib/admin.functions";
 
 export const Route = createFileRoute("/admin/applications")({
   component: AdminApplications,
@@ -40,13 +40,27 @@ function AdminApplications() {
   });
 
   const review = useMutation({
-    mutationFn: async ({ id, decision, notes }: { id: string; decision: "approved" | "rejected"; notes?: string }) => {
+    mutationFn: async ({ id, decision, notes }: { id: string; decision: Decision; notes?: string }) => {
       await reviewRetailerApplication({
         data: { applicationId: id, decision, notes: notes ?? null },
       });
     },
     onSuccess: (_, vars) => {
-      toast.success(vars.decision === "approved" ? "Retailer approved" : "Application rejected");
+      toast.success(
+        vars.decision === "approved" ? "Retailer approved" : vars.decision === "rejected" ? "Application rejected" : "Moved back to pending",
+      );
+      qc.invalidateQueries({ queryKey: ["admin-applications"] });
+      qc.invalidateQueries({ queryKey: ["admin-overview"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const remove = useMutation({
+    mutationFn: async (id: string) => {
+      await deleteRetailerApplication({ data: { id } });
+    },
+    onSuccess: () => {
+      toast.success("Application deleted");
       qc.invalidateQueries({ queryKey: ["admin-applications"] });
       qc.invalidateQueries({ queryKey: ["admin-overview"] });
     },
@@ -77,20 +91,32 @@ function AdminApplications() {
             No applications.
           </p>
         ) : (
-          apps.map((a) => <AppCard key={a.id} app={a} onReview={review.mutate} pending={review.isPending} />)
+          apps.map((a) => (
+            <AppCard
+              key={a.id}
+              app={a}
+              onReview={review.mutate}
+              onDelete={remove.mutate}
+              pending={review.isPending || remove.isPending}
+            />
+          ))
         )}
       </div>
     </div>
   );
 }
 
+type Decision = "approved" | "rejected" | "pending";
+
 function AppCard({
   app,
   onReview,
+  onDelete,
   pending,
 }: {
   app: App;
-  onReview: (v: { id: string; decision: "approved" | "rejected"; notes?: string }) => void;
+  onReview: (v: { id: string; decision: Decision; notes?: string }) => void;
+  onDelete: (id: string) => void;
   pending: boolean;
 }) {
   const [notes, setNotes] = useState(app.admin_notes ?? "");
@@ -155,6 +181,36 @@ function AppCard({
       {app.status !== "pending" && app.admin_notes && (
         <p className="mt-4 text-xs text-muted-foreground">Note: {app.admin_notes}</p>
       )}
+
+      <div className="mt-5 flex flex-wrap gap-3 border-t border-border pt-4">
+        {app.status !== "pending" && (
+          <>
+            <button
+              disabled={pending}
+              onClick={() => onReview({ id: app.id, decision: "pending", notes })}
+              className="rounded-sm border border-border px-4 py-2 text-[0.65rem] font-medium uppercase tracking-[0.18em] hover:border-primary disabled:opacity-50"
+            >
+              Reassess
+            </button>
+            <button
+              disabled={pending}
+              onClick={() => onReview({ id: app.id, decision: app.status === "approved" ? "rejected" : "approved", notes })}
+              className="rounded-sm border border-border px-4 py-2 text-[0.65rem] font-medium uppercase tracking-[0.18em] hover:border-primary disabled:opacity-50"
+            >
+              {app.status === "approved" ? "Revoke (reject)" : "Approve instead"}
+            </button>
+          </>
+        )}
+        <button
+          disabled={pending}
+          onClick={() => {
+            if (confirm(`Delete application from ${app.business_name}?`)) onDelete(app.id);
+          }}
+          className="rounded-sm border border-border px-4 py-2 text-[0.65rem] font-medium uppercase tracking-[0.18em] hover:border-destructive hover:text-destructive disabled:opacity-50"
+        >
+          Delete
+        </button>
+      </div>
     </article>
   );
 }

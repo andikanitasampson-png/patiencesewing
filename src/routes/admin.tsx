@@ -12,6 +12,7 @@ const tabs = [
   { to: "/admin/applications", label: "Applications" },
   { to: "/admin/orders", label: "Orders" },
   { to: "/admin/products", label: "Products" },
+  { to: "/admin/quotations", label: "Quotations" },
   { to: "/admin/users", label: "Users" },
 ];
 

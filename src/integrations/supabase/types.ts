@@ -246,6 +246,65 @@ export type Database = {
         }
         Relationships: []
       }
+      quotations: {
+        Row: {
+          admin_response: string | null
+          created_at: string
+          email: string
+          id: string
+          message: string
+          name: string
+          phone: string | null
+          product_id: string | null
+          product_name: string | null
+          quantity: number | null
+          responded_at: string | null
+          responded_by: string | null
+          status: string
+          user_id: string | null
+        }
+        Insert: {
+          admin_response?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          message: string
+          name: string
+          phone?: string | null
+          product_id?: string | null
+          product_name?: string | null
+          quantity?: number | null
+          responded_at?: string | null
+          responded_by?: string | null
+          status?: string
+          user_id?: string | null
+        }
+        Update: {
+          admin_response?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          message?: string
+          name?: string
+          phone?: string | null
+          product_id?: string | null
+          product_name?: string | null
+          quantity?: number | null
+          responded_at?: string | null
+          responded_by?: string | null
+          status?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quotations_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       retailer_applications: {
         Row: {
           admin_notes: string | null
